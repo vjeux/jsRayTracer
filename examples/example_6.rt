@@ -1,0 +1,57 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-50 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-5 -25 15
+}
+
+##############
+# Items list #
+##############
+
+item
+{
+  type		cone
+  color		4242ff
+  radius	0.1
+  coords	-10 -10 -5
+  brightness	100
+}
+
+item
+{
+  type		sphere
+  color		ff0000
+  radius	5
+  coords	-15 -7 -2
+}
+
+item
+{
+  type		plane
+  coords	0 0 -5
+  color		8e9691
+}

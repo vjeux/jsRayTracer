@@ -1,0 +1,49 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		800
+  height	600
+  light_collision 1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-10 0 200
+}
+
+light
+{
+  color		ffffff
+  coords	-10 -200 0
+}
+
+##############
+# Items list #
+##############
+
+# little ball
+item
+{
+  type		sphere
+  color		ff0000
+  radius	20
+  coords	0 0 0
+}

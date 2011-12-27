@@ -1,0 +1,50 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		800
+  height	600
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-200 -10 30
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-25 0 50
+}
+
+##############
+# Items list #
+##############
+
+item
+{
+  type		cylinder
+  color		ff00ea
+  radius	10
+  coords	0 -25 0
+  rot		0 90 0
+}
+
+item
+{
+  type		sphere
+  color		fff000
+  radius	15
+  coords	0 -25 1
+}

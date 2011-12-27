@@ -1,0 +1,92 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  highdef	1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-500 0 -50
+  rot		0 10 0
+}
+
+##############
+# item  list #
+##############
+
+### top right ###
+
+light
+{
+  color		ffffff
+  coords	0 0 -70
+}
+group
+{
+  id		1
+  coords	0 0 -99
+}
+
+#####################
+#    item light     #
+#####################
+
+item
+{
+  type		cone
+  limits	0 0 0 0 -50 -20
+  coords	0 0 50
+  color		ff4242
+  group_id	1
+  radius	0.3
+  pnoise	3
+  pnoise_freq	4
+  pnoise_octave	10
+  pnoise_pers	4
+  bump_only	1
+  bump		150
+}
+
+item
+{
+  type		cylinder
+  limits	0 0 0 0 -100 5
+  color		d0bd54
+  group_id	1
+}
+
+item
+{
+  type		plane
+  limits	-25 25 -25 25 -25 25
+  color		8c8979
+  color2	615f54
+  coords	0 0 -100
+  group_id	1
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.1
+  pnoise_pers	1
+  bump		150
+}
+
+############################
+
+item
+{
+  type		plane
+  coords	10 10 -200
+  checkerboard	50
+  color		c9c59d
+  color2	e6e2b4
+}

@@ -1,0 +1,140 @@
+# Global parameters
+global
+{
+  width		1280
+  height	1024
+  max_reflect	7
+}
+
+# Camera
+eye
+{
+  coords	-300 0 0
+}
+
+# Little light
+light
+{
+  color		ffffff
+  coords	-100 0 0
+  intensity	100
+}
+
+# Floor
+item
+{
+  type		plane
+  color		FF3030
+  reflect	30
+  brightness	0
+  checkerboard	50
+  coords	0 0 -50
+}
+
+# Ceiling
+item
+{
+  type		plane
+  color		3030ff
+  reflect	20
+  brightness	100
+  coords	0 0 50
+}
+
+# Left Cylinder
+item
+{
+  type		cylinder
+  color		FFCCCC
+  opacity	70
+  reflect	50
+  radius	15
+  coords	-80 100 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCF00
+  radius	10
+  coords	-150 -50 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCF30
+  radius	5
+  opacity	70
+  coords	-100 -30 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCF60
+  opacity	70
+  radius	5
+  coords	-50 -10 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCF90
+  opacity	70
+  radius	5
+  coords	0 10 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFB0
+  opacity	70
+  radius	5
+  coords	50 30 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFE0
+  opacity	70
+  radius	5
+  coords	100 50 0
+  rot		20 0 0
+}
+
+# The 3 spheres
+item
+{
+  type		sphere
+  color		4242FF
+  reflect	100
+  radius	30
+  coords	50 -80 -10
+}
+
+item
+{
+  type		sphere
+  color		4242FF
+  reflect	100
+  radius	30
+  coords	50 0 0
+}
+
+item
+{
+  type		sphere
+  color		4242FF
+  reflect	100
+  radius	30
+  coords	50 80 10
+}

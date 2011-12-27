@@ -1,0 +1,92 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  highdef	1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+  rot		0 5 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ff4242
+  coords	300 199 0
+}
+
+light
+{
+  color		4242ff
+  coords	300 -199 0
+}
+
+light
+{
+  color		42ff42
+  coords	300 0 199
+}
+
+##############
+# item  list #
+##############
+
+
+item
+{
+  type		sphere
+  color		ffffff
+  radius	100
+  coords	500 0 0
+  brightness	100
+}
+
+##############################
+
+item
+{
+  type		plane
+  coords	0 0 -200
+  checkerboard	50
+  color		c9c59d
+  color2	e6e2b4
+}
+
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 0 200
+}
+
+
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 500 0
+  rot		90 0 0
+}
+
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 -500 0
+  rot		90 0 0
+}

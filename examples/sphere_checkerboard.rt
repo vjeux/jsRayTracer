@@ -1,0 +1,73 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		500
+  height	100
+  highdef 1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-300 0 0
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ff0000
+  coords	0 50 0
+  radius	10
+  checkerboard	100
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ff0000
+  coords	0 20 0
+  rot		0 0 90
+  radius	10
+  checkerboard	100
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ff0000
+  coords	0 -10 0
+  rot		90 0 0
+  radius	10
+  checkerboard	100
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ff0000
+  coords	0 -40 0
+  rot		0 90 0
+  radius	10
+  checkerboard	100
+}

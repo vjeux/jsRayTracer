@@ -1,0 +1,119 @@
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  highdef	1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-1000 0 0
+  rot		0 5 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-1000 200 -10
+}
+
+##############
+# item  list #
+##############
+
+item
+{
+  type		plane
+  opacity	50
+  tex		./tex/far_away_terragen_2.png
+   tex_rep	1
+  rot		0 -90 0
+  coords	-500 100 -10
+  limits	-80 80 -100 100 0 0
+  brightness	0
+}
+
+item
+{
+  type		cylinder
+  coords	-500 100 70
+  limits	0 0 0 0 -100 100
+  color		3b2b15
+  color2	776144
+  rot		90 0 0
+  radius	5
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.3
+  pnoise_pers	1
+}
+
+item
+{
+  type		cylinder
+  limits	0 0 0 0 -100 100
+  coords	-500 100 -90
+  color		3b2b15
+  color2	776144
+  rot		90 0 0
+  radius	5
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.3
+  pnoise_pers	1
+}
+
+item
+{
+  type		cylinder
+  coords	-500 200 0
+  color		3b2b15
+  color2	776144
+  radius	5
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.3
+  pnoise_pers	1
+}
+
+item
+{
+  type		cylinder
+  coords	-500 0 0
+  color		3b2b15
+  color2	776144
+  radius	5
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.3
+  pnoise_pers	1
+}
+
+################################
+
+item
+{
+  type		plane
+  color		ffffff
+  coords	800 0 0
+  rot		0 90 0
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  coords	0 0 -400
+}

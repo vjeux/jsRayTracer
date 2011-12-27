@@ -1,0 +1,204 @@
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  l_color	AAAAAA
+  l_intensity	50
+  light_collision 1
+#  max_reflect	200
+  highdef	1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 10
+  rot		0 8 0
+}
+
+###############
+# Lights list #
+###############
+
+light
+{
+  color		ffffff
+  coords	400 -20 -20
+}
+
+##############
+# Items list #
+##############
+
+# Center table
+item
+{
+  type		plane
+  coords	500 0 -150
+  color		AAFFAA
+  reflect	30
+  limits	-130 130 -130 130 0 0
+}
+
+item
+{
+  type		cylinder
+  limits	0 0 0 0 -1000 -150
+  radius	10
+  coords	400 100 0
+  group_id	3
+}
+
+group
+{
+  id		3
+}
+
+group
+{
+  id		3
+  coords	0 -200 0
+}
+
+group
+{
+  id		3
+  coords	200 0 0
+}
+
+group
+{
+  id		3
+  coords	200 -200 0
+}
+
+# Right mirror
+item
+{
+  type		plane
+  limits	-100 100 0 0 0 0
+  rot		90 0 0
+  color		FFFFFF
+  reflect	60
+  coords	600 -280 0
+  rot		-80 0 0
+}
+
+# Left mirror
+item
+{
+  type		plane
+  limits	-100 100 -100 100 0 0
+  rot		90 0 0
+  color		FFFFFF
+  reflect	90
+  coords	600 298 0
+}
+
+# Left and right cylinders
+item
+{
+  type		cylinder
+  color		AAAAFF
+  radius	50
+  reflect	30
+  coords	800 0 0
+  group_id	2
+}
+
+group
+{
+  id		2
+  coords	0 -300 0
+}
+
+group
+{
+  id		2
+  coords	0 300 0
+}
+
+# Back lights
+item
+{
+  type		sphere
+  color		FF0000
+  reflect	50
+  radius	50
+  coords	800 0 80
+  limits	0 0 0 0 -50 0
+  group_id	1
+}
+
+group
+{
+  id		1
+}
+
+group
+{
+  id		1
+  coords	0 -180 0
+}
+
+group
+{
+  id		1
+  coords	0 180 0
+}
+
+
+# Floor
+item
+{
+  type		plane
+  coords	0 0 -200
+  checkerboard	50
+  color		c9c59d
+  color2	e6e2b4
+  reflect	30
+}
+
+# Ceiling
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 0 200
+}
+
+# Left wall
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 300 0
+  rot		90 0 0
+}
+
+# Right wall
+item
+{
+  type		plane
+  color		e7de7c
+  coords	0 -300 0
+  rot		90 0 0
+}
+
+# Back wall
+item
+{
+  type		plane
+  color		e7de7c
+  color2	999999
+  coords	800 0 0
+  rot		0 90 0
+  checkerboard	50
+}

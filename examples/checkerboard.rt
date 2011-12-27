@@ -1,0 +1,185 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  l_color	4242ff
+  l_intensity	50
+#  highdef	4
+  light_collision 0
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+  rot		0 5 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	0 0 0
+}
+
+##############
+# item  list #
+##############
+
+group
+{
+  id		1
+  coords	650 -130 -360
+}
+
+group
+{
+  id		1
+  coords	800 -150 -225
+}
+
+group
+{
+  id		1
+  coords	950 -150 -195
+}
+
+group
+{
+  id		1
+  coords	1200 -300 -145
+}
+
+group
+{
+  id		1
+  coords	1200 -400 -55
+}
+
+group
+{
+  id		1
+  coords	1000 -400 -5
+}
+
+group
+{
+  id		1
+  coords	900 -400 80
+}
+
+group
+{
+  id		1
+  coords	1100 -400 150
+}
+
+group
+{
+  id		1
+  coords	1200 -400 200
+}
+
+group
+{
+  id		1
+  coords	1210 -200 250
+}
+
+group
+{
+  id		1
+  coords	1210 0 300
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ff42ff
+  coords	1000 -400 -600
+  rot		60 0 30
+  radius	500
+  checkerboard	100
+}
+
+item
+{
+  type		plane
+  color2	95a4ac
+  coords	0 0 450
+  rot		-20 5 0
+  checkerboard	100
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  color2	ecba89
+  rot		60 0 30
+  radius	60
+  checkerboard	100
+  group_id	1
+}
+
+##############################
+
+item
+{
+  type		plane
+  coords	0 0 -400
+  checkerboard	50
+  color		c9c59d
+  color2	e6e2b4
+}
+
+item
+{
+  type		plane
+  color		e7de7c
+  color2	e7debb
+  coords	0 0 400
+  checkerboard	500
+}
+
+
+item
+{
+  type		plane
+  color		ea4a19
+  color2	f8b346
+  coords	0 400 0
+  rot		90 0 0
+  checkerboard	15
+}
+
+item
+{
+  type		plane
+  color		8e89ec
+  color2	b3ec89
+  coords	0 -400 0
+  rot		90 0 0
+  checkerboard	35
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  coords	1200 0 0
+  rot		0 90 0
+  checkerboard	1000
+}

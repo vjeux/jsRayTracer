@@ -1,0 +1,51 @@
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
+<script src="http://codemirror.net/lib/codemirror.js"></script>
+<script src="lib/tr.js"></script>
+<link rel="stylesheet" href="lib/tr.css">
+<script src="inspect.js"></script>
+<script src="trace.js"></script>
+<style>body { margin: 0; padding: 0; }</style>
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td valign="top">
+<canvas></canvas>
+<button id="save">Save Image</button>
+</td><td valign="top" width="600">
+<select>
+	<optgroup label="Complex">
+		<option>reflect.rt</option>
+		<option>texturing.rt</option>
+		<option>light_2.rt</option>
+		<option>origin.rt</option>
+		<option>checkerboard.rt</option>
+		<option>pokeball.rt</option>
+		<option>pokeball_flat.rt</option>
+		<option>cylinders_3-spheres_reflect.rt</option>
+		<option>ventil.rt</option>
+		<option>single_light.rt</option>
+		<option>light_3.rt</option>
+	</option>	
+	<optgroup label="Simple">
+		<option>example_1.rt</option>
+		<option>example_2.rt</option>
+		<option>example_3.rt</option>
+		<option>example_4.rt</option>
+		<option>example_5.rt</option>
+		<option>example_6.rt</option>
+		<option>example_7.rt</option>
+		<option>sphere_checkerboard.rt</option>
+	</optgroup>
+</select>
+<button id="generate">Generate</button> <button id="stop">Stop</button> <span id="time"></span><br />
+<style>
+      .CodeMirror {
+        border: 1px solid #eee;
+      }
+      .CodeMirror-scroll {
+        height: auto;
+        overflow-y: hidden;
+        overflow-x: auto;
+        width: 100%;
+      }
+</style>
+<textarea></textarea>
+</td></tr></table>

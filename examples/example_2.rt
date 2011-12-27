@@ -1,0 +1,49 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		800
+  height	600
+  distscreen	100
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-125 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-100 30 -25
+}
+
+light
+{
+  color		ffffff
+  coords	-100 -50 -45
+}
+
+##############
+# Items list #
+##############
+
+item
+{
+  type		plane
+  color		00ff00
+  coords	0 0 -30
+  brightness	100
+  rot		10 -5 0
+}

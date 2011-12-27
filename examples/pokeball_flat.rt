@@ -1,0 +1,109 @@
+#
+# Parametres generaux
+#
+global
+{
+  width		640
+  height	480
+  distscreen	1000
+  highdef	1.5 5
+}
+
+#
+# Notre oeil
+#
+eye
+{
+  coords	-230 0 0
+}
+
+#
+# Definition d'un groupe d'objet.
+# Ici, c'est une pokeball...
+#
+
+# Top
+item
+{
+  type		sphere
+  color		FF0000
+  radius	25
+  coords	0 0 0
+  limits	0 0 0 0 2 25
+  brightness	80
+  group_id	1
+}
+
+# Separator
+item
+{
+  type		sphere
+  color		000000
+  radius	25
+  limits	0 0 0 0 -2 2
+  group_id	1
+}
+
+# Button
+item
+{
+  type		sphere
+  color		000000
+  radius	7
+  coords	-20 0 0
+  group_id	1
+}
+
+item
+{
+  type		sphere
+  color		FFFFFF
+  radius	4
+  coords	-24 0 0
+  group_id	1
+}
+
+# Bottom
+item
+{
+  type		sphere
+  color		FFFFFF
+  radius	25
+  coords	0 0 0
+  limits	0 0 0 0 -25 -2
+  group_id	1
+}
+
+#
+# Insertion de nos pokeballs dans la scene
+#
+
+group
+{
+  id		1
+  rot		0 -30 0
+}
+
+group
+{
+  id		1
+  size_mul	0.4
+  coords	-280 40 -30
+  rot		-10 -20 0
+}
+
+group
+{
+  id		1
+  size_mul	0.5
+  coords	150 60 30
+  rot		20 30 -10
+}
+
+group
+{
+  id		1
+  size_mul	0.5
+  coords	-150 -60 -30
+  rot		20 30 10
+}

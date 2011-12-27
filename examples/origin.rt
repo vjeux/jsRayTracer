@@ -1,0 +1,139 @@
+
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  highdef	1
+  max_reflect	10
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-50 0 0
+  intensity	100
+}
+
+##############
+# Items list #
+##############
+
+# Floor
+
+item
+{
+  type		plane
+  color		ff3030
+  radius	0
+  reflect	30
+  coords	0 0 -50
+  brightness	30
+}
+
+# Ceiling
+
+item
+{
+  type		plane
+  color		ffffff
+  reflect	60
+  radius	0
+  coords	0 0 50
+  rot		0 0 0
+}
+
+
+# Right colums :
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	-150 -50 0
+  rot		10 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	-100 -50 0
+  rot		20 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	-50 -50 0
+  rot		30 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	0 -50 0
+  rot		40 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	50 -50 0
+  rot		50 0 0
+}
+
+item
+{
+  type		cylinder
+  color		CCCFFF
+  radius	5
+  coords	100 -50 0
+  rot		60 0 0
+}
+
+# little ball
+
+item
+{
+  type		sphere
+  color		4242FF
+  reflect	30
+  radius	16
+  coords	-60 70 -15
+  rot		0 0 0
+}
+
+item
+{
+  type		cone
+  color		356055
+  reflect	40
+  radius	0.5
+  coords	0 65 -5
+  rot		0 0 0
+}
