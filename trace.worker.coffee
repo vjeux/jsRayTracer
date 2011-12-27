@@ -40,29 +40,20 @@ class Parser
 
 	multiple: ['light', 'item', 'group']
 	convert:
-		color: (input) -> input[0].match(/(..)/g).map (hex) -> (parseInt hex, 16) / 255
-		color2: (input) -> input[0].match(/(..)/g).map (hex) -> (parseInt hex, 16) / 255
-		l_color: (input) -> input[0].match(/(..)/g).map (hex) -> (parseInt hex, 16) / 255
-		tex: (input) -> input[0]
-		radius: (input) -> +input[0]
-		width: (input) -> +input[0]
-		height: (input) -> +input[0]
-		highdef: (input) -> input.map (x) -> +x
-		checkerboard: (input) -> +input[0]
-		distscreen: (input) -> +input[0]
-		brightness: (input) -> +input[0]
-		group_id: (input) -> input[0]
-		id: (input) -> +input[0]
-		max_reflect: (input) -> +input[0]
-		tex_rep: (input) -> +input[0]
-		tex_coef: (input) -> +input[0]
-		size_mul: (input) -> +input[0]
-		reflect: (input) -> +input[0]
-		l_intensity: (input) -> +input[0]
-		coords: (input) -> input.map (x) -> +x
-		limits: (input) -> input.map (x) -> +x
-		rot: (input) -> input.map (x) -> +x
-		type: (input) -> input[0]
+		[{ # Color
+			func: (input) -> input[0].match(/(..)/g).map (hex) -> (parseInt hex, 16) / 255
+			fields: ['color', 'color2', 'l_color']
+		}, { # String
+			func: (input) -> input[0]
+			fields: ['tex', 'type']
+		}, { # Number
+			func: (input) -> +input[0]
+			fields: ['radius', 'width', 'height', 'checkerboard', 'distscreen', 'brightness',
+			'group_id', 'id', 'max_reflect', 'tex_rep', 'tex_coef', 'size_mul', 'reflect', 'l_intensity']
+		}, { # Array of Number
+			func: (input) -> input.map (x) -> +x
+			fields: ['highdef', 'coords', 'limits', 'rot']
+		}]
 
 	constructor: (str) ->
 		@lines = str
@@ -84,8 +75,9 @@ class Parser
 		params = @objectify(while line = @lines.shift()
 			break if line == '}'
 			[key, values...] = line.split /\s+/
-			if key of @convert
-				values = @convert[key] values
+			for convert in @convert
+				if convert.fields.contains key
+					values = convert.func values
 			[key, values]
 		)
 		[name, params]
@@ -300,10 +292,9 @@ intersects =
 			phi = Math.acos (pos_[2] / item.radius)
 			x = phi / Math.PI * 500
 			theta = Math.acos((pos_[1] / item.radius) / Math.sin(phi)) / (2 * Math.PI);
-			if (pos_[0] < 0)
-				y = theta * 500;
-			else
-				y = (1 - theta) * 500
+			if pos_[0] > 0
+				theta = 1 - theta
+			y = theta * 500;
 
 			if (mod1(x / item.checkerboard) > 0.5) == (mod1(y / item.checkerboard) > 0.5)
 				color = item.color2
@@ -412,7 +403,6 @@ processRay = (x, y) ->
 	ray.dir = vec3.rotateXYZ ray.dir, scene.eye.rot...
 
 	colors = []
-
 	for i in [0 ... scene.global.max_reflect]
 		isect = intersect ray
 		if not isect
@@ -456,13 +446,6 @@ vec3={
 		mat4.rotateX(m,x);
 		mat4.rotateY(m,y);
 		mat4.rotateZ(m,z);
-		return mat4.multiplyVec3(m,v);
-	},
-	rotateZYX:function(v,x,y,z){
-		var m=mat4.create(mat4.identity());
-		mat4.rotateZ(m,z);
-		mat4.rotateY(m,y);
-		mat4.rotateX(m,x);
 		return mat4.multiplyVec3(m,v);
 	},
 	mix:function(x,y,a){
