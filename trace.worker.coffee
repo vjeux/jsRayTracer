@@ -41,7 +41,7 @@ class Parser
 	convert:
 		[{ # Color
 			func: (input) -> input[0].match(/(..)/g).map (hex) -> (parseInt hex, 16) / 255
-			fields: ['color', 'color2', 'l_color']
+			fields: ['color', 'color2', 'l_color', 'tex_color_cut']
 		}, { # String
 			func: (input) -> input[0]
 			fields: ['tex', 'type']
@@ -383,6 +383,27 @@ intersects =
 
 			if (mod(x / item.checkerboard, 1) > 0.5) == (mod(y / item.checkerboard, 1) > 0.5)
 				color = item.color2
+
+
+		if item.tex?
+			texture = textures[item.tex]
+			vec3.normalize pos_
+
+			phi = Math.acos pos_[2]
+			y = Math.floor phi / Math.PI * texture.height
+			theta = Math.acos(pos_[1] / Math.sin(phi)) / (2 * Math.PI);
+			if pos_[0] > 0
+				theta = 1 - theta
+			x = Math.floor theta * texture.width
+
+			if item.tex_rep
+				x = mod x * item.tex_coef, texture.width
+				y = mod y * item.tex_coef, texture.height
+			idx = (texture.width * y + x) * 4
+			color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
+
+			if vec3.length(color) < 0.1
+				return
 
 		if item.pnoise > 0
 			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq

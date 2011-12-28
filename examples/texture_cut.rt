@@ -1,0 +1,62 @@
+global
+{
+  width		1280
+  height	600
+  highdef	1
+}
+
+eye
+{
+  coords	-400 0 0
+  rot 0 5 0
+}
+
+#########################
+#         light         #
+#########################
+
+light
+{
+  coords	-600 0 0
+  color		ffffff
+}
+
+light
+{
+  coords	0 250 150
+  color		4242ff
+}
+
+light
+{
+  coords	0 -250 150
+  color		ff4242
+}
+
+#########################
+
+item
+{
+  type		sphere
+  color		ffffff
+  tex		tex/earth.png
+  tex_cut	1
+  tex_color_cut	0036ff
+  radius	35
+  coords	0 0 -20
+  rot		0 0 -60
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  coords	0 0 -100
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  coords	0 0 200
+}
