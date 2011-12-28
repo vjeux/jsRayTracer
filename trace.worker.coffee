@@ -82,9 +82,7 @@ class Parser
 		)
 		[name, params]
 
-
-
-scene = 0
+scene = null
 textures = []
 textures_remaining = 0
 
@@ -93,7 +91,6 @@ textures_remaining = 0
 		{input} = value
 		scene = new Parser(input).parse()
 
-#		log scene
 		scene.global.highdef ?= []
 		scene.global.highdef[0] ?= 1 # upscale
 		scene.global.highdef[1] ?= 0 # randomRays
@@ -134,13 +131,12 @@ textures_remaining = 0
 					item.limits[2 * i + 1] = Infinity
 
 			item.transform = mat4.identity()
+#			mat4.scale item.transform, [item.radius, item.radius, item.radius]
 			mat4.translate item.transform, item.coords
 			mat4.rotateX item.transform, item.rot[0]
 			mat4.rotateY item.transform, item.rot[1]
 			mat4.rotateZ item.transform, item.rot[2]
-
-			if item.type == 'plane'
-				item.normal = vec3.normalize vec3.rotateXYZ [0, 0, 1], item.rot...
+#			item.radius = 1
 
 			item.intersect = intersects[item.type]
 			if item.group_id
@@ -170,9 +166,6 @@ textures_remaining = 0
 				mat4.multiply t, item.transform
 				item.transform = t
 
-				if item.normal?
-					item.normal = vec3.rotateXYZ item.normal, item.rot...
-
 				if item.radius?
 					item.radius *= group.size_mul
 
@@ -193,7 +186,6 @@ textures_remaining = 0
 				textures_remaining++
 
 		@onmessage data: ['texture']
-#		log scene.item
 
 	if type == 'texture'
 		textures_remaining--
@@ -216,12 +208,6 @@ textures_remaining = 0
 
 epsilon = 0.0001
 
-mod1 = (x) ->
-	if x < 0
-		(.5 + Math.abs x) % 1
-	else
-		x % 1
-
 mod = (x, n) ->
 	((x % n) + n) % n
 
@@ -240,6 +226,7 @@ isValid = (ray, distances, item, min_distance) ->
 		pos_ = mat4.multiplyVec3 item.inverse, pos, vec3.create()
 		if inLimits item.limits, pos_
 			return [pos, pos_, distance]
+
 	[null, null, null]
 
 solve_eq2 = (a, b, c) ->
@@ -251,11 +238,19 @@ solve_eq2 = (a, b, c) ->
 	[(-b - sqDelta) / (2 * a),
 	 (-b + sqDelta) / (2 * a)]
 
+sign = (x) ->
+	if x > 0
+		1
+	else if x == 0
+		0
+	else
+		-1
+
 intersects =
 	plane: (ray, ray_, item, min_distance) ->
 		solutions = []
 		if ray_.dir[2] != 0
-			solutions = [-ray_.origin[2] / ray_.dir[2]]
+			solutions.push -ray_.origin[2] / ray_.dir[2]
 
 		[pos, pos_, distance] = isValid ray, solutions, item, min_distance
 		return if not pos
@@ -263,7 +258,7 @@ intersects =
 		color = item.color
 
 		if item.checkerboard?
-			if (mod1(pos_[0] / item.checkerboard) > 0.5) == (mod1(pos_[1] / item.checkerboard) > 0.5)
+			if (mod(pos_[0] / item.checkerboard, 1) > 0.5) == (mod(pos_[1] / item.checkerboard, 1) > 0.5)
 				color = item.color2
 
 		if item.tex?
@@ -276,8 +271,7 @@ intersects =
 			idx = (texture.width * y + x) * 4
 			color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
 
-		normal = vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, 1]
-#		normal = item.normal
+		normal = vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
 		{distance, pos, normal, color, item}
 
 	sphere: (ray, ray_, item, min_distance) ->
@@ -296,10 +290,10 @@ intersects =
 				theta = 1 - theta
 			y = theta * 500;
 
-			if (mod1(x / item.checkerboard) > 0.5) == (mod1(y / item.checkerboard) > 0.5)
+			if (mod(x / item.checkerboard, 1) > 0.5) == (mod(y / item.checkerboard, 1) > 0.5)
 				color = item.color2
 
-		normal = vec3.normalize vec3.sub pos, item.coords, vec3.create()
+		normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
 		{distance, pos, normal, color, item}
 
 	cone: (ray, ray_, item, min_distance) ->
@@ -313,7 +307,7 @@ intersects =
 		return if not pos
 
 		color = item.color
-		normal = mat4.multiplyVec3 item.inverse, vec3.create pos
+		normal = vec3.create pos_
 		normal[2] = -normal[2] * Math.tan item.radius2
 		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
 		{distance, pos, normal, color, item}
@@ -326,7 +320,7 @@ intersects =
 		return if not pos
 
 		color = item.color
-		normal = mat4.multiplyVec3 item.inverse, vec3.create pos
+		normal = vec3.create pos_
 		normal[2] = 0
 		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
 		{distance, pos, normal, color, item}
@@ -336,7 +330,7 @@ intersect = (ray, min_distance=Infinity) ->
 	min_isect = null
 
 	for item in scene.item
-		ray_ =
+		ray_ = # underscore means in the object's coordinates
 			dir: (vec3.normalize mat4.multiplyDelta3 item.inverse, ray.dir)
 			origin: (mat4.multiplyVec3 item.inverse, ray.origin, [0, 0, 0])
 
@@ -353,7 +347,6 @@ lightning = (isect) ->
 	else
 		color = vec3.create isect.color
 
-	f = false
 	for light in scene.light || []
 		dir = vec3.sub light.coords, isect.pos, vec3.create()
 		min_distance = vec3.length dir
@@ -374,7 +367,6 @@ lightning = (isect) ->
 			add_color = vec3.scale add_color, isect.item.intensity
 
 			vec3.add color, add_color
-			f = true
 
 	ambiant = vec3.create isect.color
 	vec3.mul ambiant, scene.global.l_color
