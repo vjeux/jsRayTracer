@@ -1,0 +1,94 @@
+global
+{
+  width		1024
+  height	768
+}
+
+eye
+{
+  coords	-300 0 0
+}
+
+light
+{
+  coords	-150 80 0
+  color		ffffff
+}
+
+light
+{
+  coords	-150 -80 0
+  color		4242ff
+}
+
+item
+{
+  type		cylinder
+  color		ffffff
+  opacity	50
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  radius	30
+  coords	100 -80 10
+  rot		20 10 0
+}
+
+item
+{
+  type		sphere
+  color		ffffff
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  radius	30
+  coords	0 30 0
+  rot		0 0 -80
+}
+
+item
+{
+  type		plane
+  color		ff4242
+  tex		tex/marbre.png
+  tex_rep	1
+  reflect	50
+  coords	0 0 -50
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  coords	0 0 50
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  coords	0 -100 -50
+  rot		-90 0 0
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  coords	0 100 -50
+  rot		90 0 0
+}
+
+item
+{
+  type		plane
+  color		ffffff
+  tex		tex/bebop_wall.png
+  tex_rep	1
+  coords	200 0 50
+  rot		0 -90 0
+}

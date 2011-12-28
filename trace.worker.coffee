@@ -25,7 +25,6 @@ copy = (obj) ->
 	else
 		obj
 
-
 class Parser
 	objectify: (pairs) ->
 		hash = {}
@@ -49,7 +48,8 @@ class Parser
 		}, { # Number
 			func: (input) -> +input[0]
 			fields: ['radius', 'width', 'height', 'checkerboard', 'distscreen', 'brightness',
-			'group_id', 'id', 'max_reflect', 'tex_rep', 'tex_coef', 'size_mul', 'reflect', 'l_intensity']
+			'group_id', 'id', 'max_reflect', 'tex_rep', 'tex_coef', 'size_mul', 'reflect',
+			'l_intensity', 'pnoise', 'pnoise_octave', 'pnoise_freq', 'pnoise_pers', 'bump']
 		}, { # Array of Number
 			func: (input) -> input.map (x) -> +x
 			fields: ['highdef', 'coords', 'limits', 'rot']
@@ -83,7 +83,7 @@ class Parser
 		[name, params]
 
 scene = null
-textures = []
+textures = {}
 textures_remaining = 0
 
 @onmessage = (data: [type, value]) ->
@@ -117,7 +117,8 @@ textures_remaining = 0
 			light.color ?= [1, 1, 1]
 
 		for item in scene.item
-			item.color2 ?= [0, 0, 0]
+			item.color ?= [1, 1, 1]
+			item.color2 ?= vec3.scale item.color, 0.3, [0, 0, 0]
 			item.coords ?= [0, 0, 0]
 			item.rot = vec3.scale (item.rot ? [0, 0, 0]), Math.PI / 180
 			item.brightness = (item.brightness ? 0) / 100
@@ -129,6 +130,11 @@ textures_remaining = 0
 				if item.limits[2 * i] >= item.limits[2 * i + 1]
 					item.limits[2 * i] = -Infinity
 					item.limits[2 * i + 1] = Infinity
+
+			item.pnoise ?= 0
+			item.pnoise_freq ?= 1
+			item.pnoise_pers ?= 1
+			item.pnoise_octave ?= 1
 
 			item.transform = mat4.identity()
 #			mat4.scale item.transform, [item.radius, item.radius, item.radius]
@@ -175,7 +181,7 @@ textures_remaining = 0
 
 		textures_remaining = 1
 		for item in scene.item
-			item.coords = mat4.multiplyVec4 item.transform, [0, 0, 0, 1]
+			item.coords = mat4.multiplyVec3 item.transform, [0, 0, 0]
 			item.inverse = mat4.inverse item.transform, mat4.create()
 			item.radius2 = item.radius * item.radius
 
@@ -203,7 +209,6 @@ textures_remaining = 0
 					result.push ~~(color[0] * 255)
 					result.push ~~(color[1] * 255)
 					result.push ~~(color[2] * 255)
-
 				postMessage result
 
 epsilon = 0.0001
@@ -246,6 +251,88 @@ sign = (x) ->
 	else
 		-1
 
+# http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
+
+saved = {}
+noise = (i, x, y, z) ->
+	key = i + '|' + x + '|' + y + '|' + z
+	val = saved[key]
+	if val is undefined
+		val = saved[key] = Math.random()
+#		log [key, val]
+	val
+
+div = (a, b) ->
+	Math.floor(a / b)
+
+clamp = (x, min, max) ->
+	x = min if x < min
+	x = max if x > max
+	x
+
+interpolate = (a, b, x) ->
+#	x = (1 - cos(x * Math.PI)) / 2
+	a * (1 - x) + b * x
+
+interpolatedNoise = (i, x, y, z, freq) ->
+	x += Math.pow 2, 30 # Hack to deal with negative modulo
+	y += Math.pow 2, 30
+	z += Math.pow 2, 30
+
+	low_x = x - x % freq
+	hig_x = low_x + freq
+	alp_x = (x - low_x) / (hig_x - low_x)
+	alp_x = alp_x * alp_x * (3 - 2 * alp_x)
+
+	low_y = y - y % freq
+	hig_y = low_y + freq
+	alp_y = (y - low_y) / (hig_y - low_y)
+	alp_y = alp_y * alp_y * (3 - 2 * alp_y)
+
+	low_z = z - z % freq
+	hig_z = low_z + freq
+	alp_z = (z - low_z) / (hig_z - low_z)
+	alp_z = alp_z * alp_z * (3 - 2 * alp_z)
+
+#	log [low_x, x, hig_x, alp_x, '-', low_y, y, hig_y, alp_y]
+
+	v000 = noise i, low_x, low_y, low_z
+	v001 = noise i, low_x, low_y, hig_z
+	v010 = noise i, low_x, hig_y, low_z
+	v011 = noise i, low_x, hig_y, hig_z
+	v100 = noise i, hig_x, low_y, low_z
+	v101 = noise i, hig_x, low_y, hig_z
+	v110 = noise i, hig_x, hig_y, low_z
+	v111 = noise i, hig_x, hig_y, hig_z
+
+	i1 = interpolate v000, v001, alp_z
+	i2 = interpolate v010, v011, alp_z
+	i3 = interpolate v100, v101, alp_z
+	i4 = interpolate v110, v111, alp_z
+
+	j1 = interpolate i1, i2, alp_y
+	j2 = interpolate i3, i4, alp_y
+
+	interpolate j1, j2, alp_x
+
+perlin = (pos, id, persistence, octaves, frequence) ->
+	pos = vec3.scale pos, 0.1 * frequence, vec3.create()
+	total = 0
+	frequency = 1
+	amplitude = 1
+	for i in [0 ... octaves]
+		total += amplitude * interpolatedNoise i, pos[0], pos[1], pos[2], frequency
+		frequency /= 2
+		amplitude *= persistence
+
+	if id == 2
+		total *= 20
+		total = total - Math.floor total
+	else if id == 3
+		total = Math.cos pos[1] + total
+
+	total = clamp(total, -1, 1)
+
 intersects =
 	plane: (ray, ray_, item, min_distance) ->
 		solutions = []
@@ -260,6 +347,10 @@ intersects =
 		if item.checkerboard?
 			if (mod(pos_[0] / item.checkerboard, 1) > 0.5) == (mod(pos_[1] / item.checkerboard, 1) > 0.5)
 				color = item.color2
+
+		if item.pnoise > 0
+			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+			color = vec3.mix item.color, item.color2, alpha
 
 		if item.tex?
 			texture = textures[item.tex]
@@ -293,6 +384,10 @@ intersects =
 			if (mod(x / item.checkerboard, 1) > 0.5) == (mod(y / item.checkerboard, 1) > 0.5)
 				color = item.color2
 
+		if item.pnoise > 0
+			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+			color = vec3.mix item.color, item.color2, alpha
+
 		normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
 		{distance, pos, normal, color, item}
 
@@ -307,6 +402,11 @@ intersects =
 		return if not pos
 
 		color = item.color
+
+		if item.pnoise > 0
+			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+			color = vec3.mix item.color, item.color2, alpha
+
 		normal = vec3.create pos_
 		normal[2] = -normal[2] * Math.tan item.radius2
 		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
@@ -320,6 +420,11 @@ intersects =
 		return if not pos
 
 		color = item.color
+
+		if item.pnoise > 0
+			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+			color = vec3.mix item.color, item.color2, alpha
+
 		normal = vec3.create pos_
 		normal[2] = 0
 		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
@@ -451,7 +556,6 @@ mat4={
 	create:function(a){var b=new Array(16);a&&(b[0]=a[0],b[1]=a[1],b[2]=a[2],b[3]=a[3],b[4]=a[4],b[5]=a[5],b[6]=a[6],b[7]=a[7],b[8]=a[8],b[9]=a[9],b[10]=a[10],b[11]=a[11],b[12]=a[12],b[13]=a[13],b[14]=a[14],b[15]=a[15]);return b},
 	identity:function(a){a||(a=mat4.create());a[0]=1;a[1]=0;a[2]=0;a[3]=0;a[4]=0;a[5]=1;a[6]=0;a[7]=0;a[8]=0;a[9]=0;a[10]=1;a[11]=0;a[12]=0;a[13]=0;a[14]=0;a[15]=1;return a},
 	multiplyVec3:function(a,b,c){c||(c=b);var d=b[0],e=b[1],b=b[2];c[0]=a[0]*d+a[4]*e+a[8]*b+a[12];c[1]=a[1]*d+a[5]*e+a[9]*b+a[13];c[2]=a[2]*d+a[6]*e+a[10]*b+a[14];return c},
-	multiplyVec4:function(a,b,c){c||(c=b);var d=b[0],e=b[1],f=b[2],b=b[3];c[0]=a[0]*d+a[4]*e+a[8]*f+a[12]*b;c[1]=a[1]*d+a[5]*e+a[9]*f+a[13]*b;c[2]=a[2]*d+a[6]*e+a[10]*f+a[14]*b;c[3]=a[3]*d+a[7]*e+a[11]*f+a[15]*b;return c},
 	multiplyDelta3: function(mat, vec) {
 		var a_ = mat4.multiplyVec3(mat, [0, 0, 0]);
 		var b_ = mat4.multiplyVec3(mat, vec3.create(vec));

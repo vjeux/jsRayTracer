@@ -1,0 +1,134 @@
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	768
+  l_color	FFFFFF
+  l_intensity	40
+  highdef	0.5
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-100 0 50
+}
+
+##############
+# item  list #
+##############
+
+### Left top
+item
+{
+  type		sphere
+  color		404040
+  color2	b57118
+  radius	30
+  brightness	20
+  coords	0 100 50
+  pnoise	1
+  pnoise_octave	10
+  pnoise_freq	4
+  pnoise_pers	1
+  bump		100
+}
+
+# Center top
+item
+{
+  type		sphere
+  radius	30
+  pnoise	3
+  pnoise_octave	10
+  pnoise_freq	2
+  pnoise_pers	.9
+  coords	0 0 50
+}
+
+# Right top
+item
+{
+  type		sphere
+  color		FF0000
+  color2	bc7640
+  radius	30
+  coords	0 -100 50
+  brightness	20
+  pnoise	3
+}
+
+# Left bottom
+item
+{
+  type		sphere
+  color		303090
+  color2	309090
+  radius	30
+  brightness	20
+  coords	0 100 -25
+  pnoise	3
+  pnoise_octave	10
+  pnoise_freq	5
+  pnoise_pers	5
+  bump		100
+}
+
+# Center bottom
+item
+{
+  type		sphere
+  color		3b2b15
+  color2	776144
+  radius	30
+  coords	0 0 -25
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.3
+  pnoise_pers	1
+  bump		150
+}
+
+# Right bottom
+item
+{
+  type		sphere
+  color		303030
+  color2	FFAAAA
+  radius	30
+  coords	0 -100 -25
+  pnoise	3
+  pnoise_freq	.9
+  pnoise_pers	0.9
+  pnoise_octave	5
+}
+
+# Floor
+item
+{
+  type		plane
+  color		303030
+  color2	101010
+  coords	0 0 -60
+  pnoise	1
+  pnoise_freq	.5
+  pnoise_pers	.5
+  reflect	20
+  bump		100
+}
