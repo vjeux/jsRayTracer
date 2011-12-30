@@ -3,7 +3,6 @@
 # - pos2d for cones and cylinders
 # - perlin
 # - texture cut
-# - opacity
 # - refract
 # - bump
 
@@ -48,7 +47,7 @@ class Parser
 			func: (input) -> +input[0]
 			fields: ['radius', 'width', 'height', 'checkerboard', 'distscreen', 'brightness',
 			'group_id', 'id', 'max_reflect', 'tex_rep', 'tex_coef', 'size_mul', 'reflect',
-			'l_intensity', 'pnoise', 'pnoise_octave', 'pnoise_freq', 'pnoise_pers', 'bump']
+			'l_intensity', 'pnoise', 'pnoise_octave', 'pnoise_freq', 'pnoise_pers', 'bump', 'opacity']
 		}, { # Array of Number
 			func: (input) -> input.map (x) -> +x
 			fields: ['highdef', 'coords', 'limits', 'rot']
@@ -123,6 +122,7 @@ textures_remaining = 0
 			item.brightness = (item.brightness ? 0) / 100
 			item.intensity = (item.intensity ? 100) / 100
 			item.reflect = (item.reflect ? 0) / 100
+			item.opacity = (item.opacity ? 100) / 100
 			item.radius ?= 2
 			item.limits ?= [0, 0, 0, 0, 0, 0]
 			for i in [0 ... 3]
@@ -143,7 +143,7 @@ textures_remaining = 0
 			mat4.rotateZ item.transform, item.rot[2]
 #			item.radius = 1
 
-			item.intersect = intersects[item.type]
+#			item.intersect = intersects[item.type]
 			if item.group_id
 				groups[item.group_id] ?= []
 				groups[item.group_id].push item
@@ -333,71 +333,71 @@ perlin = (pos, id, persistence, octaves, frequence) ->
 	total = clamp(total, -1, 1)
 
 
-objects =
-	plane:
-		solutions: (item, ray_) ->
-			if ray_.dir[2] != 0
-				[-ray_.origin[2] / ray_.dir[2]]
-			else
-				[]
-		pos2d: (item, pos_, width, height) ->
-			[width / 2 - pos_[1],
-			 height / 2 - pos_[0]]
+objects = {}
+objects.plane =
+	solutions: (item, ray_) ->
+		if ray_.dir[2] != 0
+			[-ray_.origin[2] / ray_.dir[2]]
+		else
+			[]
 
-		normal: (item, ray_, pos_) ->
-			vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
+	pos2d: (item, pos_, width, height) ->
+		[width / 2 - pos_[1],
+		 height / 2 - pos_[0]]
 
-	sphere:
-		solutions: (item, ray_) ->
-			a = vec3.dot ray_.dir, ray_.dir
-			b = 2 * vec3.dot ray_.origin, ray_.dir
-			c = (vec3.dot ray_.origin, ray_.origin) - item.radius2
-			solve_eq2(a, b, c)
+	normal: (item, ray_, pos_) ->
+		vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
 
-		pos2d: (item, pos_, width, height) ->
-			phi = Math.acos (pos_[2] / item.radius)
-			y = phi / Math.PI * height
-			theta = Math.acos((pos_[1] / item.radius) / Math.sin(phi)) / (2 * Math.PI);
-			if pos_[0] > 0
-				theta = 1 - theta
-			x = theta * width
-			[x, y]
+objects.sphere =
+	solutions: (item, ray_) ->
+		a = vec3.dot ray_.dir, ray_.dir
+		b = 2 * vec3.dot ray_.origin, ray_.dir
+		c = (vec3.dot ray_.origin, ray_.origin) - item.radius2
+		solve_eq2(a, b, c)
 
-		normal: (item, ray_, pos_) ->
-			vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
+	pos2d: (item, pos_, width, height) ->
+		pos_ = vec3.normalize pos_, vec3.create()
+		phi = Math.acos (pos_[2])
+		y = phi / Math.PI * height
+		theta = Math.acos((pos_[1]) / Math.sin(phi)) / (2 * Math.PI);
+		if pos_[0] > 0
+			theta = 1 - theta
+		x = theta * width
+		[x, y]
 
-	cone:
-		solutions: (item, ray_) ->
-			a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1] -
-				item.radius * ray_.dir[2] * ray_.dir[2]
-			b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1] -
-				item.radius * ray_.origin[2] * ray_.dir[2])
-			c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] -
-				item.radius * ray_.origin[2] * ray_.origin[2]
-			solve_eq2(a, b, c)
+	normal: (item, ray_, pos_) ->
+		vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
 
-		pos2d: (item, pos_, width, height) ->
-			pos_
+objects.cone =
+	solutions: (item, ray_) ->
+		a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1] -
+			item.radius * ray_.dir[2] * ray_.dir[2]
+		b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1] -
+			item.radius * ray_.origin[2] * ray_.dir[2])
+		c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] -
+			item.radius * ray_.origin[2] * ray_.origin[2]
+		solve_eq2(a, b, c)
 
-		normal: (item, ray_, pos_) ->
-			normal = vec3.create pos_
-			normal[2] = -normal[2] * Math.tan item.radius2
-			vec3.normalize mat4.multiplyDelta3 item.transform, normal
+	pos2d: objects.sphere.pos2d
 
-	cylinder:
-		solutions: (item, ray_) ->
-			a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1]
-			b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1])
-			c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] - item.radius2
-			solve_eq2(a, b, c)
+	normal: (item, ray_, pos_) ->
+		normal = vec3.create pos_
+		normal[2] = -normal[2] * Math.tan item.radius2
+		vec3.normalize mat4.multiplyDelta3 item.transform, normal
 
-		pos2d: (item, pos_, width, height) ->
-			pos_
+objects.cylinder =
+	solutions: (item, ray_) ->
+		a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1]
+		b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1])
+		c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] - item.radius2
+		solve_eq2(a, b, c)
 
-		normal: (item, ray_, pos_) ->
-			normal = vec3.create pos_
-			normal[2] = 0
-			vec3.normalize mat4.multiplyDelta3 item.transform, normal
+	pos2d: objects.sphere.pos2d
+
+	normal: (item, ray_, pos_) ->
+		normal = vec3.create pos_
+		normal[2] = 0
+		vec3.normalize mat4.multiplyDelta3 item.transform, normal
 
 intersectItem = (item, ray, min_distance) ->
 	ray_ = # underscore means in the object's coordinates
@@ -410,6 +410,7 @@ intersectItem = (item, ray, min_distance) ->
 	return if not pos
 
 	color = item.color
+	opacity = item.opacity
 
 	if item.checkerboard?
 		pos2d = obj.pos2d item, pos_, 500, 500
@@ -425,16 +426,27 @@ intersectItem = (item, ray, min_distance) ->
 		pos2d = obj.pos2d item, pos_, texture.width, texture.height
 		x = Math.floor pos2d[0]
 		y = Math.floor pos2d[1]
-		if item.tex_rep
+		if item.tex_rep != 0
 			x = mod x * item.tex_coef, texture.width
 			y = mod y * item.tex_coef, texture.height
 		idx = (texture.width * y + x) * 4
-		if texture.data[idx + 3] != 255
-			return
+		opacity *= texture.data[idx + 3] / 255
 		color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
 
 	normal = obj.normal item, ray_, pos_
-	{distance, pos, normal, color, item}
+	{distance, pos, normal, color, item, opacity}
+
+
+intersect = (ray, min_distance=Infinity) ->
+	min_isect = null
+
+	for item in scene.item
+		isect = intersectItem item, ray, min_distance
+		if isect and (not min_isect or isect.distance < min_isect.distance)
+			min_isect = isect
+			min_distance = isect.distance
+
+	min_isect
 
 lightning = (isect) ->
 	if scene.light?
@@ -489,11 +501,17 @@ launchRay = (ray, count) ->
 	if isect
 		color = lightning isect
 
+		if isect.opacity < 1
+			ray2 =
+				origin: (vec3.add isect.pos, (vec3.scale ray.dir, epsilon, vec3.create()), vec3.create())
+				dir: (vec3.create ray.dir)
+			color = vec3.mix color, (launchRay ray2, count), 1 - isect.opacity
+
 		if count > 0 and isect.item.reflect > 0
-			# Reflechi
-			ray.origin = vec3.add isect.pos, (vec3.scale isect.normal, epsilon, vec3.create()), vec3.create()
-			ray.dir = vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create()
-			color = vec3.mix color, (launchRay ray, count - 1), isect.item.reflect
+			ray2 =
+				origin: (vec3.add isect.pos, (vec3.scale isect.normal, epsilon, vec3.create()), vec3.create())
+				dir: (vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create())
+			color = vec3.mix color, (launchRay ray2, count - 1), isect.item.reflect
 
 	color
 
