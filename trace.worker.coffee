@@ -1,14 +1,10 @@
 # TODO
 # - shadow
-# - pos2d for cones and cylinders
-# - perlin
-# - texture cut
 # - refract
 # - bump
 
 # TO FIX
 # - pb de rotation des groupes (pokeball)
-# - refraction des planes plafond du mauvais cote (origin.rt)
 
 Array::contains = (x) -> (@indexOf x) != -1
 log = (x...) -> postMessage ['log', x...]
@@ -116,14 +112,14 @@ textures_remaining = 0
 
 		for item in scene.item
 			item.color ?= [1, 1, 1]
-			item.color2 ?= vec3.scale item.color, 0.3, [0, 0, 0]
+			item.color2 ?= item.color.map (x) -> 1 - x
 			item.coords ?= [0, 0, 0]
 			item.rot = vec3.scale (item.rot ? [0, 0, 0]), Math.PI / 180
 			item.brightness = (item.brightness ? 0) / 100
 			item.intensity = (item.intensity ? 100) / 100
 			item.reflect = (item.reflect ? 0) / 100
 			item.opacity = (item.opacity ? 100) / 100
-			item.radius ?= 2
+			item.radius ?= if item.type == 'plane' then 1 else 2
 			item.limits ?= [0, 0, 0, 0, 0, 0]
 			for i in [0 ... 3]
 				if item.limits[2 * i] >= item.limits[2 * i + 1]
@@ -143,7 +139,6 @@ textures_remaining = 0
 			mat4.rotateZ item.transform, item.rot[2]
 #			item.radius = 1
 
-#			item.intersect = intersects[item.type]
 			if item.group_id
 				groups[item.group_id] ?= []
 				groups[item.group_id].push item
@@ -159,6 +154,7 @@ textures_remaining = 0
 			mat4.rotateX group.transform, group.rot[0]
 			mat4.rotateY group.transform, group.rot[1]
 			mat4.rotateZ group.transform, group.rot[2]
+#			item.radius *= group.size_mul
 
 			if group.id not of groups
 				continue
@@ -170,9 +166,6 @@ textures_remaining = 0
 				t = mat4.create group.transform
 				mat4.multiply t, item.transform
 				item.transform = t
-
-				if item.radius?
-					item.radius *= group.size_mul
 
 				scene.item.push item
 
@@ -250,15 +243,12 @@ sign = (x) ->
 	else
 		-1
 
-# http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
-
 saved = {}
 noise = (i, x, y, z) ->
 	key = i + '|' + x + '|' + y + '|' + z
 	val = saved[key]
 	if val is undefined
 		val = saved[key] = Math.random()
-#		log [key, val]
 	val
 
 div = (a, b) ->
@@ -292,8 +282,6 @@ interpolatedNoise = (i, x, y, z, freq) ->
 	hig_z = low_z + freq
 	alp_z = (z - low_z) / (hig_z - low_z)
 	alp_z = alp_z * alp_z * (3 - 2 * alp_z)
-
-#	log [low_x, x, hig_x, alp_x, '-', low_y, y, hig_y, alp_y]
 
 	v000 = noise i, low_x, low_y, low_z
 	v001 = noise i, low_x, low_y, hig_z
@@ -346,7 +334,7 @@ objects.plane =
 		 height / 2 - pos_[0]]
 
 	normal: (item, ray_, pos_) ->
-		vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
+		[0, 0, -sign ray_.dir[2]]
 
 objects.sphere =
 	solutions: (item, ray_) ->
@@ -366,7 +354,7 @@ objects.sphere =
 		[x, y]
 
 	normal: (item, ray_, pos_) ->
-		vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
+		pos_
 
 objects.cone =
 	solutions: (item, ray_) ->
@@ -383,7 +371,7 @@ objects.cone =
 	normal: (item, ray_, pos_) ->
 		normal = vec3.create pos_
 		normal[2] = -normal[2] * Math.tan item.radius2
-		vec3.normalize mat4.multiplyDelta3 item.transform, normal
+		normal
 
 objects.cylinder =
 	solutions: (item, ray_) ->
@@ -397,7 +385,7 @@ objects.cylinder =
 	normal: (item, ray_, pos_) ->
 		normal = vec3.create pos_
 		normal[2] = 0
-		vec3.normalize mat4.multiplyDelta3 item.transform, normal
+		normal
 
 intersectItem = (item, ray, min_distance) ->
 	ray_ = # underscore means in the object's coordinates
@@ -434,6 +422,7 @@ intersectItem = (item, ray, min_distance) ->
 		color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
 
 	normal = obj.normal item, ray_, pos_
+	normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create normal
 	{distance, pos, normal, color, item, opacity}
 
 
@@ -461,8 +450,8 @@ lightning = (isect) ->
 		pos = vec3.create()
 		pos = vec3.add isect.pos, (vec3.scale dir, epsilon, pos), pos
 		ray =
-			origin: pos
-			dir: dir
+			origin: vec3.create pos
+			dir: vec3.create dir
 
 		if not intersect ray, min_distance
 			shade = Math.abs vec3.dot isect.normal, ray.dir
@@ -504,13 +493,13 @@ launchRay = (ray, count) ->
 		if isect.opacity < 1
 			ray2 =
 				origin: (vec3.add isect.pos, (vec3.scale ray.dir, epsilon, vec3.create()), vec3.create())
-				dir: (vec3.create ray.dir)
+				dir: (vec3.normalize vec3.create ray.dir)
 			color = vec3.mix color, (launchRay ray2, count), 1 - isect.opacity
 
 		if count > 0 and isect.item.reflect > 0
 			ray2 =
 				origin: (vec3.add isect.pos, (vec3.scale isect.normal, epsilon, vec3.create()), vec3.create())
-				dir: (vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create())
+				dir: (vec3.normalize vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create())
 			color = vec3.mix color, (launchRay ray2, count - 1), isect.item.reflect
 
 	color
@@ -519,7 +508,7 @@ processPixel = (x, y) ->
 	ray =
 		origin: vec3.create scene.eye.coords
 		dir: vec3.normalize [scene.global.distscreen, x, y]
-	ray.dir = vec3.rotateXYZ ray.dir, scene.eye.rot...
+	ray.dir = vec3.normalize vec3.rotateXYZ ray.dir, scene.eye.rot...
 
 	launchRay ray, scene.global.max_reflect
 
