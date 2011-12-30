@@ -1,10 +1,9 @@
 # TODO
 # - shadow
-# - textures
+# - pos2d for cones and cylinders
 # - perlin
 # - texture cut
 # - opacity
-# - reflect
 # - refract
 # - bump
 
@@ -333,139 +332,109 @@ perlin = (pos, id, persistence, octaves, frequence) ->
 
 	total = clamp(total, -1, 1)
 
-intersects =
-	plane: (ray, ray_, item, min_distance) ->
-		solutions = []
-		if ray_.dir[2] != 0
-			solutions.push -ray_.origin[2] / ray_.dir[2]
 
-		[pos, pos_, distance] = isValid ray, solutions, item, min_distance
-		return if not pos
+objects =
+	plane:
+		solutions: (item, ray_) ->
+			if ray_.dir[2] != 0
+				[-ray_.origin[2] / ray_.dir[2]]
+			else
+				[]
+		pos2d: (item, pos_, width, height) ->
+			[width / 2 - pos_[1],
+			 height / 2 - pos_[0]]
 
-		color = item.color
+		normal: (item, ray_, pos_) ->
+			vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
 
-		if item.checkerboard?
-			if (mod(pos_[0] / item.checkerboard, 1) > 0.5) == (mod(pos_[1] / item.checkerboard, 1) > 0.5)
-				color = item.color2
+	sphere:
+		solutions: (item, ray_) ->
+			a = vec3.dot ray_.dir, ray_.dir
+			b = 2 * vec3.dot ray_.origin, ray_.dir
+			c = (vec3.dot ray_.origin, ray_.origin) - item.radius2
+			solve_eq2(a, b, c)
 
-		if item.pnoise > 0
-			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
-			color = vec3.mix item.color, item.color2, alpha
-
-		if item.tex?
-			texture = textures[item.tex]
-			x = texture.width / 2 - ~~pos_[1]
-			y = texture.height / 2 - ~~pos_[0]
-			if item.tex_rep
-				x = mod x * item.tex_coef, texture.width
-				y = mod y * item.tex_coef, texture.height
-			idx = (texture.width * y + x) * 4
-			color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
-
-		normal = vec3.normalize mat4.multiplyDelta3 item.transform, [0, 0, -sign ray_.dir[2]]
-		{distance, pos, normal, color, item}
-
-	sphere: (ray, ray_, item, min_distance) ->
-		a = vec3.dot ray_.dir, ray_.dir
-		b = 2 * vec3.dot ray_.origin, ray_.dir
-		c = (vec3.dot ray_.origin, ray_.origin) - item.radius2
-		[pos, pos_, distance] = isValid ray, solve_eq2(a, b, c), item, min_distance
-		return if not pos
-
-		color = item.color
-		if item.checkerboard?
+		pos2d: (item, pos_, width, height) ->
 			phi = Math.acos (pos_[2] / item.radius)
-			x = phi / Math.PI * 500
+			y = phi / Math.PI * height
 			theta = Math.acos((pos_[1] / item.radius) / Math.sin(phi)) / (2 * Math.PI);
 			if pos_[0] > 0
 				theta = 1 - theta
-			y = theta * 500;
+			x = theta * width
+			[x, y]
 
-			if (mod(x / item.checkerboard, 1) > 0.5) == (mod(y / item.checkerboard, 1) > 0.5)
-				color = item.color2
+		normal: (item, ray_, pos_) ->
+			vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
 
+	cone:
+		solutions: (item, ray_) ->
+			a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1] -
+				item.radius * ray_.dir[2] * ray_.dir[2]
+			b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1] -
+				item.radius * ray_.origin[2] * ray_.dir[2])
+			c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] -
+				item.radius * ray_.origin[2] * ray_.origin[2]
+			solve_eq2(a, b, c)
 
-		if item.tex?
-			texture = textures[item.tex]
-			vec3.normalize pos_
+		pos2d: (item, pos_, width, height) ->
+			pos_
 
-			phi = Math.acos pos_[2]
-			y = Math.floor phi / Math.PI * texture.height
-			theta = Math.acos(pos_[1] / Math.sin(phi)) / (2 * Math.PI);
-			if pos_[0] > 0
-				theta = 1 - theta
-			x = Math.floor theta * texture.width
+		normal: (item, ray_, pos_) ->
+			normal = vec3.create pos_
+			normal[2] = -normal[2] * Math.tan item.radius2
+			vec3.normalize mat4.multiplyDelta3 item.transform, normal
 
-			if item.tex_rep
-				x = mod x * item.tex_coef, texture.width
-				y = mod y * item.tex_coef, texture.height
-			idx = (texture.width * y + x) * 4
-			color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
+	cylinder:
+		solutions: (item, ray_) ->
+			a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1]
+			b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1])
+			c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] - item.radius2
+			solve_eq2(a, b, c)
 
-			if vec3.length(color) < 0.1
-				return
+		pos2d: (item, pos_, width, height) ->
+			pos_
 
-		if item.pnoise > 0
-			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
-			color = vec3.mix item.color, item.color2, alpha
+		normal: (item, ray_, pos_) ->
+			normal = vec3.create pos_
+			normal[2] = 0
+			vec3.normalize mat4.multiplyDelta3 item.transform, normal
 
-		normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create pos_
-		{distance, pos, normal, color, item}
+intersectItem = (item, ray, min_distance) ->
+	ray_ = # underscore means in the object's coordinates
+		dir: (vec3.normalize mat4.multiplyDelta3 item.inverse, ray.dir)
+		origin: (mat4.multiplyVec3 item.inverse, ray.origin, [0, 0, 0])
 
-	cone: (ray, ray_, item, min_distance) ->
-		a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1] -
-			item.radius * ray_.dir[2] * ray_.dir[2]
-		b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1] -
-			item.radius * ray_.origin[2] * ray_.dir[2])
-		c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] -
-			item.radius * ray_.origin[2] * ray_.origin[2]
-		[pos, pos_, distance] = isValid ray, solve_eq2(a, b, c), item, min_distance
-		return if not pos
+	obj = objects[item.type]
 
-		color = item.color
+	[pos, pos_, distance] = isValid ray, (obj.solutions item, ray_), item, min_distance
+	return if not pos
 
-		if item.pnoise > 0
-			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
-			color = vec3.mix item.color, item.color2, alpha
+	color = item.color
 
-		normal = vec3.create pos_
-		normal[2] = -normal[2] * Math.tan item.radius2
-		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
-		{distance, pos, normal, color, item}
+	if item.checkerboard?
+		pos2d = obj.pos2d item, pos_, 500, 500
+		if (mod(pos2d[0] / item.checkerboard, 1) > 0.5) == (mod(pos2d[1] / item.checkerboard, 1) > 0.5)
+			color = item.color2
 
-	cylinder: (ray, ray_, item, min_distance) ->
-		a = ray_.dir[0] * ray_.dir[0] + ray_.dir[1] * ray_.dir[1]
-		b = 2 * (ray_.origin[0] * ray_.dir[0] + ray_.origin[1] * ray_.dir[1])
-		c = ray_.origin[0] * ray_.origin[0] + ray_.origin[1] * ray_.origin[1] - item.radius2
-		[pos, pos_, distance] = isValid ray, solve_eq2(a, b, c), item, min_distance
-		return if not pos
+	if item.pnoise > 0
+		alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+		color = vec3.mix item.color, item.color2, alpha
 
-		color = item.color
+	if item.tex?
+		texture = textures[item.tex]
+		pos2d = obj.pos2d item, pos_, texture.width, texture.height
+		x = Math.floor pos2d[0]
+		y = Math.floor pos2d[1]
+		if item.tex_rep
+			x = mod x * item.tex_coef, texture.width
+			y = mod y * item.tex_coef, texture.height
+		idx = (texture.width * y + x) * 4
+		if texture.data[idx + 3] != 255
+			return
+		color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
 
-		if item.pnoise > 0
-			alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
-			color = vec3.mix item.color, item.color2, alpha
-
-		normal = vec3.create pos_
-		normal[2] = 0
-		normal = vec3.normalize mat4.multiplyDelta3 item.transform, normal
-		{distance, pos, normal, color, item}
-
-
-intersect = (ray, min_distance=Infinity) ->
-	min_isect = null
-
-	for item in scene.item
-		ray_ = # underscore means in the object's coordinates
-			dir: (vec3.normalize mat4.multiplyDelta3 item.inverse, ray.dir)
-			origin: (mat4.multiplyVec3 item.inverse, ray.origin, [0, 0, 0])
-
-		isect = item.intersect ray, ray_, item, min_distance
-		if isect and (not min_isect or isect.distance < min_isect.distance)
-			min_isect = isect
-			min_distance = isect.distance
-
-	min_isect
+	normal = obj.normal item, ray_, pos_
+	{distance, pos, normal, color, item}
 
 lightning = (isect) ->
 	if scene.light?
@@ -502,45 +471,39 @@ lightning = (isect) ->
 process = (x, y, upscale, randomRays) ->
 	color = [0, 0, 0]
 
-	vec3.add color, processRay(
+	vec3.add color, processPixel(
 		(scene.global.W / 2 - x) / upscale,
 		(scene.global.H / 2 - y) / upscale)
 
 	for i in [0 ... randomRays]
-		vec3.add color, processRay(
+		vec3.add color, processPixel(
 			(scene.global.W / 2 - x + Math.random() - 0.5) / upscale,
 			(scene.global.H / 2 - y + Math.random() - 0.5) / upscale)
 
 	vec3.scale color, 1 / (1 + randomRays)
 
-processRay = (x, y) ->
+launchRay = (ray, count) ->
+	color = [0, 0, 0]
+
+	isect = intersect ray
+	if isect
+		color = lightning isect
+
+		if count > 0 and isect.item.reflect > 0
+			# Reflechi
+			ray.origin = vec3.add isect.pos, (vec3.scale isect.normal, epsilon, vec3.create()), vec3.create()
+			ray.dir = vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create()
+			color = vec3.mix color, (launchRay ray, count - 1), isect.item.reflect
+
+	color
+
+processPixel = (x, y) ->
 	ray =
 		origin: vec3.create scene.eye.coords
 		dir: vec3.normalize [scene.global.distscreen, x, y]
-
 	ray.dir = vec3.rotateXYZ ray.dir, scene.eye.rot...
 
-	colors = []
-	for i in [0 ... scene.global.max_reflect]
-		isect = intersect ray
-		if not isect
-			break
-
-		colors.push
-			color: lightning isect
-			reflect: isect.item.reflect
-
-		if isect.item.reflect == 0
-			break
-
-		ray.origin = vec3.add isect.pos, (vec3.scale isect.normal, epsilon, ray.origin), ray.origin
-		ray.dir = vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create()
-
-	colors.reverse()
-	finalColor = [0, 0, 0]
-	for c in colors
-		finalColor = vec3.mix finalColor, c.color, 1 - c.reflect
-	finalColor
+	launchRay ray, scene.global.max_reflect
 
 `
 var cos=Math.cos, sin=Math.sin;
