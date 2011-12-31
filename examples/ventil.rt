@@ -8,7 +8,6 @@ global
   width		800
   height	600
   max_reflect	50
-  light_collision 0
 }
 
 ###############

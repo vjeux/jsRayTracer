@@ -1,44 +1,51 @@
-<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
-<script src="http://codemirror.net/lib/codemirror.js"></script>
-<script src="lib/tr.js"></script>
+<link rel="stylesheet" href="lib/bootstrap.min.css">
+<link rel="stylesheet" href="lib/codemirror.css">
 <link rel="stylesheet" href="lib/tr.css">
-<script src="inspect.js"></script>
+<link rel="stylesheet" href="lib/raytracer.css">
+<script src="lib/jquery-1.7.1.min.js"></script>
+<script src="lib/codemirror.js"></script>
+<script src="lib/tr.js"></script>
+<script src="lib/inspect.js"></script>
 <script src="trace.js"></script>
-<style>body { margin: 0; padding: 0; }</style>
-<table width="100%" cellpadding="0" cellspacing="0"><tr><td valign="top">
-<canvas></canvas>
-<button id="save">Save Image</button>
-</td><td valign="top" width="600">
-<select>
-	<optgroup label="Complex">
-		<option>texture_cut.rt</option>
-		<option>reflect.rt</option>
-		<option>texturing.rt</option>
-		<option>light_2.rt</option>
-		<option>origin.rt</option>
-		<option>checkerboard.rt</option>
-		<option>pokeball.rt</option>
-		<option>pokeball_flat.rt</option>
-		<option>cylinders_3-spheres_reflect.rt</option>
-		<option>ventil.rt</option>
-		<option>single_light.rt</option>
-		<option>light_3.rt</option>
-		<option>perlin.rt</option>
-	</option>	
-	<optgroup label="Simple">
-		<option>example_1.rt</option>
-		<option>example_2.rt</option>
-		<option>example_3.rt</option>
-		<option>example_4.rt</option>
-		<option>example_5.rt</option>
-		<option>example_6.rt</option>
-		<option>example_7.rt</option>
-		<option>test_perlin.rt</option>
-		<option>sphere_checkerboard.rt</option>
-	</optgroup>
-</select>
-<button id="generate">Generate</button> <button id="stop">Stop</button> <span id="time"></span><br />
+
+<table width="100%" cellpadding="0" cellspacing="0"><tr>
+
+<td valign="top" width="356">
+
+<a href="https://github.com/vjeux/jsRayTracer">
+	<img style="position: fixed; top: 0; right: 0; border: 0;" src="http://pamflet.databinder.net/img/fork.png" alt="Fork me on GitHub">
+</a>
+
+<div style="width: 356px;">
+	<div id="selection" class="well" style="margin-bottom: 0;">
+		<h3 style="padding-top: 0; text-align: center;">Ray Tracer by <a href="http://blog.vjeux.com/">Vjeux</a></h3>
+
+		<img src="images/examples/pokeball_small.png" title="pokeball"/> 
+		<img src="images/examples/texturing_cut_small.png" title="texturing_cut"/> 
+		<img src="images/examples/reflect_small.png" title="reflect"/> 
+		<img src="images/examples/texturing_small.png" title="texturing"/> 
+		<img src="images/examples/origin_small.png" title="origin"/> 
+		<img src="images/examples/checkerboard_small.png" title="checkerboard"/> 
+		<img src="images/examples/cylinders_3-spheres_reflect_small.png" title="cylinders_3-spheres_reflect"/> 
+		<img src="images/examples/ventil_small.png" title="ventil"/> 
+		<img src="images/examples/single_light_small.png" title="single_light"/> 
+		<img src="images/examples/light_3_small.png" title="light_3"/> 
+		<img src="images/examples/perlin_small.png" title="perlin"/> 
+		<img src="images/examples/sphere_checkerboard_small.png" title="sphere_checkerboard"/> 
+
+		<img src="images/examples/example_1_small.png" title="example_1"/> 
+		<img src="images/examples/example_2_small.png" title="example_2"/> 
+		<img src="images/examples/example_3_small.png" title="example_3"/> 
+		<img src="images/examples/example_4_small.png" title="example_4"/> 
+		<img src="images/examples/example_5_small.png" title="example_5"/> 
+		<img src="images/examples/example_6_small.png" title="example_6"/> 
+		<img src="images/examples/example_7_small.png" title="example_7"/> 
+	</div>
+
+<div style="text-align: center; margin: 15px 0;">
+	<button id="generate" class="btn primary">Ray Trace!</button>
+	<button id="stop" class="btn">Stop</button>
+</div>
 <style>
       .CodeMirror {
         border: 1px solid #eee;
@@ -51,4 +58,20 @@
       }
 </style>
 <textarea></textarea>
+</div>
+</td>
+<td valign="top" style="text-align: center;">
+	<canvas></canvas><br /><br />
+	<button id="save" class="btn primary">Save Image</button>
+	<span id="time" style="margin-left: 5px;"></span>
 </td></tr></table>
+
+
+<footer>
+	<div class="container">
+		<p>
+			Ray Tracer by <a href="http://blog.vjeux.com/">Vjeux</a>.<br />
+			Powered by <a href="https://github.com/toji/gl-matrix">glMatrix</a>, <a href="http://codemirror.net/">CodeMirror</a>, <a href="http://coffeescript.org/">CoffeeScript</a>, <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>, <a href="http://jquery.com/">jQuery</a> and <a href="https://developer.mozilla.org/en/Using_web_workers">Web Workers</a>.
+		</p>
+	</div>
+</footer>

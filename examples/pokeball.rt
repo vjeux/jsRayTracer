@@ -6,7 +6,7 @@ global
   width		1024
   height	768
   distscreen	1000
-#  highdef	4
+  highdef	1
 }
 
 
@@ -125,15 +125,13 @@ group
 group
 {
   id		1
-  size_mul	0.5
-  coords	-170 50 -20
-  rot		-25 -25 30
+  coords	15 50 0
+  rot		-25 -45 30
 }
 
 group
 {
   id		1
-  size_mul	0.4
-  coords	-300 -60 -30
-  rot		25 25 30
+  coords	35 -80 0
+  rot		15 30 -20
 }

@@ -49,12 +49,6 @@ item
   color		ff4242
   group_id	1
   radius	0.3
-  pnoise	3
-  pnoise_freq	4
-  pnoise_octave	10
-  pnoise_pers	4
-  bump_only	1
-  bump		150
 }
 
 item

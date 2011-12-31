@@ -1,0 +1,38 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#selection img:hover {
+	cursor: pointer;
+}
+
+#selection img {
+	border-radius: 5px;
+}
+
+#save {
+	display: none;
+}
+
+.well {
+	padding: 5px 19px;
+}
+
+.CodeMirror {
+	border: 1px solid #eee;
+}
+
+.CodeMirror-scroll {
+	height: auto;
+	overflow-y: hidden;
+	overflow-x: auto;
+	width: 100%;
+}
+
+footer {
+	background-color: #EEE;
+	padding: 30px 0;
+	text-shadow: 0 1px 0 white;
+	border-top: 1px solid #E5E5E5;
+}

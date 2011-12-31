@@ -1,57 +1,36 @@
-#####################
-# Global parameters #
-#####################
+group
+{
+  id		1
+  size_mul	1
+#  rot		0 -20 0
+#  coords	-30 -10 0
+}
 global
 {
   width		1024
   height	768
   distscreen	1000
-  highdef	1
+  highdef	0.25
 }
-
-
-##########
-# Camera #
-##########
-
 eye
 {
   coords	-200 0 0
 }
-
-
-#########
-# Floor #
-#########
-
 item
 {
+  bump 1
   type		plane
   color		FFFFFF
   reflect	20
   checkerboard	30
   coords	0 0 -25
 }
-
-
-##########
-# Lights #
-##########
-
 light
 {
   color		FFFFFF
   intensity	100
   coords	-300 100 100
 }
-
-
-################
-# The Pokeball #
-################
-
-### Top ###
-
 item
 {
   type		sphere
@@ -62,9 +41,6 @@ item
   reflect	20
   group_id	1
 }
-
-### Separator ###
-
 item
 {
   type		sphere
@@ -74,9 +50,6 @@ item
   limits	0 0 0 0 -2 2
   group_id	1
 }
-
-###  Button ###
-
 item
 {
   type		sphere
@@ -86,7 +59,6 @@ item
   reflect	10
   group_id	1
 }
-
 item
 {
   type		sphere
@@ -96,9 +68,6 @@ item
   reflect	10
   group_id	1
 }
-
-### Bottom ###
-
 item
 {
   type		sphere
@@ -108,32 +77,4 @@ item
   limits	0 0 0 0 -25 -2
   group_id	1
   reflect	20
-}
-
-
-######################################
-# All the pokeballs are belong to us #
-######################################
-
-group
-{
-  id		1
-  rot		0 -20 0
-  coords	-30 -10 0
-}
-
-group
-{
-  id		1
-#  size_mul	0.5
-  coords	15 50 0
-  rot		-25 -25 30
-}
-
-group
-{
-  id		1
-#  size_mul	0.4
-  coords	35 -80 0
-  rot		15 30 -20
 }

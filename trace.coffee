@@ -11,10 +11,12 @@ $ ->
 	editor = CodeMirror.fromTextArea $('textarea')[0],
 		lineNumbers: true
 
-	$('select').change( ->
-		$.get 'examples/' + $(this).val(), (file) ->
-			editor.setValue file)
-		.change()
+	$('#selection img').click ->
+		title = $(this).attr('title') + '.rt'
+		$.get 'examples/' + title, (file) ->
+			editor.setValue '# ' + title + '\n\n' + file.trim()
+
+	$('#selection img').eq(0).click()
 
 	$('#stop').click ->
 		worker.terminate() if worker
@@ -66,6 +68,7 @@ $ ->
 				canvas.height = H
 				canvasData = context.createImageData W, H
 				$canvas.css width: realW, height: realH
+				$('#save').show()
 
 			else if msg.data[0] == 'log'
 				if throttle-- > 0

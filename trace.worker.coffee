@@ -423,6 +423,10 @@ intersectItem = (item, ray, min_distance) ->
 
 	normal = obj.normal item, ray_, pos_
 	normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create normal
+
+	if opacity == 0
+		return
+
 	{distance, pos, normal, color, item, opacity}
 
 

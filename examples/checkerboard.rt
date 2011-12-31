@@ -9,8 +9,6 @@ global
   height	768
   l_color	4242ff
   l_intensity	50
-#  highdef	4
-  light_collision 0
 }
 
 ###############
