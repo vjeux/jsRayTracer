@@ -15,8 +15,42 @@ body {
 	display: none;
 }
 
+table {
+	width: 100%;
+}
+
+td {
+	text-align: center;
+}
+
+.forkme {
+	position: fixed;
+	top: 0;
+	right: 0;
+	border: 0;
+}
+
+.buttons {
+	text-align: center;
+	margin: 15px 0;
+}
+
+#time {
+	margin-left: 5px;
+}
+
+h3 {
+	padding-top: 0;
+	text-align: center;
+}
+
+.left {
+	width: 356px;
+}
+
 .well {
 	padding: 5px 19px;
+	margin-bottom: 0;
 }
 
 .CodeMirror {
