@@ -19,7 +19,7 @@ table {
 	width: 100%;
 }
 
-td {
+table td {
 	text-align: center;
 }
 
@@ -55,6 +55,7 @@ h3 {
 
 .CodeMirror {
 	border: 1px solid #eee;
+	text-align: left;
 }
 
 .CodeMirror-scroll {
