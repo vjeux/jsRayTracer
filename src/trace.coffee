@@ -26,7 +26,7 @@ $ ->
 
 	$('#generate').click ->
 		worker.terminate() if worker
-		worker = new Worker 'trace.worker.js'
+		worker = new Worker 'src/worker.js'
 		worker.postMessage ['process', {input: editor.getValue()}]
 
 		count = 0
