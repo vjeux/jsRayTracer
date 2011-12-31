@@ -3,7 +3,7 @@
 
 It's a school project: a Ray Tracer written with web technologies. I've taken the file format and all the examples from the Ray Tracer of my friends [Maxime Mouial](http://www.linkedin.com/pub/maxime-mouial/1a/967/269) and [Clément Bœsch](http://ubitux.fr/).
 
-It is powered by <a href="https://github.com/toji/gl-matrix">glMatrix</a>, <a href="http://codemirror.net/">CodeMirror</a>, <a href="http://coffeescript.org/">CoffeeScript</a>, <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>, <a href="http://jquery.com/">jQuery</a> and <a href="https://developer.mozilla.org/en/Using_web_workers">Web Workers</a>
+It is powered by <a href="https://github.com/toji/gl-matrix">glMatrix</a>, <a href="http://codemirror.net/">CodeMirror</a>, <a href="http://coffeescript.org/">CoffeeScript</a>, <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>, <a href="http://jquery.com/">jQuery</a> and <a href="https://developer.mozilla.org/en/Using_web_workers">Web Workers</a>.
 
 Features
 ========
@@ -18,7 +18,7 @@ Features
 Examples
 ========
 
-<a href="http://fooo.fr/~vjeux/epita/raytracer/trace.html">
+<a href="http://fooo.fr/~vjeux/epita/raytracer/raytracer.html">
 <img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/pokeball_thumb.png" title="pokeball"/> 
 &nbsp;<img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/texturing_cut_thumb.png" title="texturing_cut"/> 
 &nbsp;<img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/reflect_thumb.png" title="reflect"/> 
