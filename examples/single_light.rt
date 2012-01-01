@@ -69,7 +69,7 @@ item
   group_id	1
   pnoise	2
   pnoise_octave	1
-  pnoise_freq	0.1
+  pnoise_freq	0.01
   pnoise_pers	1
   bump		150
 }

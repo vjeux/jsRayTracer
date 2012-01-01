@@ -1,0 +1,109 @@
+global {
+  width		600
+  height	480
+#  highdef 0.25
+}
+eye {
+  coords	-400 0 10
+}
+light {
+  color		ffffff
+  coords	500 40 100
+}
+# Green Portals
+item {
+  type portal
+  color ff0000
+  coords 799.99 120 0
+  radius 100
+  rot		0 270 180
+  portal_id 0
+}
+item {
+  type portal
+  color ff0000
+  coords 799.99 -120 0
+  radius 100
+  rot		0 90 0
+  portal_id 0
+}
+# Blue portals
+item { # floor
+  type portal
+  color 0000ff
+  coords	400 0 -149.99
+  rot 0 0 180
+  radius 100
+  portal_id 1
+}
+item { # right
+  type portal
+  color 0000ff
+  coords	400 -199.99 0
+  rot		90 0 90
+  radius 100
+  portal_id 1
+}
+
+# Props
+
+item {
+  type sphere
+  color ff0000
+  coords 600 120 0
+  radius 20
+}
+item {
+  type sphere
+  color 0000ff
+  coords 410 -180 -100
+  radius 10
+}
+item {
+  type sphere
+  color 00ff00
+  coords 410 180 -100
+  radius 10
+}
+
+
+item { # floor
+  type		plane
+  coords	0 0 -150
+  color		ffff00
+  tex		tex/white-tile-texture.jpg
+  tex_coef	8
+  tex_rep	1
+}
+item { # ceiling
+  type		plane
+  color		00ffff
+  coords	0 0 150
+  tex		tex/ceiling-textures.s600x600.jpg
+  tex_rep	1
+}
+item { # left wall
+  type		plane
+  color		ff00ff
+  coords	0 200 0
+  rot		90 0 90
+  tex		tex/masonry-wall-texture.jpg
+  tex_coef	4
+  tex_rep	1
+}
+item { # Right wall
+  type		plane
+  color		00ff00
+  coords	0 -200 0
+  rot		90 0 90
+  tex		tex/brickwork-texture.jpg
+  tex_rep	1
+}
+item { # Back wall
+  type		plane
+  color		00ff00
+  tex		tex/arroway.de_concrete-06_s025-g050.png
+  tex_rep	1
+  coords	800 0 0
+  rot		0 90 0
+}

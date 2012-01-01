@@ -12,11 +12,15 @@ $ ->
 		lineNumbers: true
 
 	$('#selection img').click ->
-		title = $(this).attr('title') + '.rt'
-		$.get 'examples/' + title, (file) ->
-			editor.setValue '# ' + title + '\n\n' + file.trim()
+		title = $(this).attr('title')
+		document.location.hash = title
+		$.get 'examples/' + title + '.rt', (file) ->
+			editor.setValue '# ' + title + '.rt\n\n' + file.trim()
 
-	$('#selection img').eq(0).click()
+	default_img = $('#selection [title=' + document.location.hash[1...] + ']')
+	if default_img.length == 0
+		default_img = $('#selection img')
+	default_img.eq(0).click()
 
 	$('#stop').click ->
 		worker.terminate() if worker

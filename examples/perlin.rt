@@ -26,7 +26,7 @@ item
   coords	0 0 0
   rot       0 -90 0
   pnoise	1
-  pnoise_freq	1
+  pnoise_freq	0.1
   pnoise_octave	8
   pnoise_pers	.3
 }
@@ -39,7 +39,7 @@ item
   coords	0 0 0
   radius 30
   pnoise	1
-  pnoise_freq	1
+  pnoise_freq	0.1
   pnoise_octave	8
   pnoise_pers	.3
 }

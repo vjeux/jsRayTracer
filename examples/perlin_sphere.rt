@@ -1,0 +1,94 @@
+#####################
+# Global parameters #
+#####################
+
+global
+{
+  width		1024
+  height	500
+  l_color	FFFFFF
+  l_intensity	40
+  highdef	1
+}
+
+###############
+# Camera info #
+###############
+
+eye
+{
+  coords	-300 0 0
+  rot 0 5 0
+}
+
+##############
+# light list #
+##############
+
+light
+{
+  color		ffffff
+  coords	-100 0 50
+}
+
+##############
+# item  list #
+##############
+
+### Left
+item
+{
+  type		sphere
+  color		404040
+  color2	b57118
+  radius	30
+  brightness	20
+  coords	0 100 -25
+  pnoise	1
+  pnoise_freq	0.2
+  pnoise_octave	2
+  pnoise_pers	5
+  bump		100
+}
+
+# Center
+item
+{
+  type		sphere
+  radius	30
+  pnoise	3
+  pnoise_octave	2
+  pnoise_freq	0.1
+  pnoise_pers	6.5
+  coords	0 0 -25
+}
+
+# Right
+item
+{
+  type		sphere
+  color		3b2b15
+  color2	776144
+  radius	30
+  coords	0 -100 -25
+  pnoise	2
+  pnoise_octave	1
+  pnoise_freq	0.02
+  pnoise_pers	1
+  bump		150
+}
+
+# Floor
+item
+{
+  type		plane
+  color		303030
+  color2	101010
+  coords	0 0 -60
+  pnoise	1
+  pnoise_freq	.05
+  pnoise_pers	.5
+  reflect	20
+  bump		100
+}
+  

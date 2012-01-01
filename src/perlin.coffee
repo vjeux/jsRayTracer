@@ -1,77 +1,84 @@
 
-saved = {}
-noise = (i, x, y, z) ->
-	key = i + '|' + x + '|' + y + '|' + z
-	val = saved[key]
-	if val is undefined
-		val = saved[key] = Math.random()
-	val
+`
+// http://asserttrue.blogspot.com/2011/12/perlin-noise-in-javascript_31.html
+// This is a port of Ken Perlin's Java code. The
+// original Java code is at http://cs.nyu.edu/%7Eperlin/noise/.
+// Note that in this version, a number from 0 to 1 is returned.
+PerlinNoise = new function() {
 
-div = (a, b) ->
-	Math.floor(a / b)
+this.noise = function(x, y, z) {
+
+   var p = new Array(512)
+   var permutation = [ 151,160,137,91,90,15,
+   131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
+   190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
+   88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
+   77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,
+   102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,
+   135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,
+   5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,
+   223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,
+   129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
+   251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
+   49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
+   138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
+   ];
+   for (var i=0; i < 256 ; i++)
+ p[256+i] = p[i] = permutation[i];
+
+      var X = Math.floor(x) & 255,                  // FIND UNIT CUBE THAT
+          Y = Math.floor(y) & 255,                  // CONTAINS POINT.
+          Z = Math.floor(z) & 255;
+      x -= Math.floor(x);                                // FIND RELATIVE X,Y,Z
+      y -= Math.floor(y);                                // OF POINT IN CUBE.
+      z -= Math.floor(z);
+      var    u = fade(x),                                // COMPUTE FADE CURVES
+             v = fade(y),                                // FOR EACH OF X,Y,Z.
+             w = fade(z);
+      var A = p[X  ]+Y, AA = p[A]+Z, AB = p[A+1]+Z,      // HASH COORDINATES OF
+          B = p[X+1]+Y, BA = p[B]+Z, BB = p[B+1]+Z;      // THE 8 CUBE CORNERS,
+
+      return scale(lerp(w, lerp(v, lerp(u, grad(p[AA  ], x  , y  , z   ),  // AND ADD
+                                     grad(p[BA  ], x-1, y  , z   )), // BLENDED
+                             lerp(u, grad(p[AB  ], x  , y-1, z   ),  // RESULTS
+                                     grad(p[BB  ], x-1, y-1, z   ))),// FROM  8
+                     lerp(v, lerp(u, grad(p[AA+1], x  , y  , z-1 ),  // CORNERS
+                                     grad(p[BA+1], x-1, y  , z-1 )), // OF CUBE
+                             lerp(u, grad(p[AB+1], x  , y-1, z-1 ),
+                                     grad(p[BB+1], x-1, y-1, z-1 )))));
+   }
+   function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+   function lerp( t, a, b) { return a + t * (b - a); }
+   function grad(hash, x, y, z) {
+      var h = hash & 15;                      // CONVERT LO 4 BITS OF HASH CODE
+      var u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
+             v = h<4 ? y : h==12||h==14 ? x : z;
+      return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
+   }
+   function scale(n) { return n; /*return (1 + n)/2;*/ }
+}
+`
+
 
 clamp = (x, min, max) ->
-	x = min if x < min
-	x = max if x > max
+	return min if x < min
+	return max if x > max
 	x
 
-interpolate = (a, b, x) ->
-#	x = (1 - cos(x * Math.PI)) / 2
-	a * (1 - x) + b * x
-
-interpolatedNoise = (i, x, y, z, freq) ->
-	x += Math.pow 2, 30 # Hack to deal with negative modulo
-	y += Math.pow 2, 30
-	z += Math.pow 2, 30
-
-	low_x = x - x % freq
-	hig_x = low_x + freq
-	alp_x = (x - low_x) / (hig_x - low_x)
-	alp_x = alp_x * alp_x * (3 - 2 * alp_x)
-
-	low_y = y - y % freq
-	hig_y = low_y + freq
-	alp_y = (y - low_y) / (hig_y - low_y)
-	alp_y = alp_y * alp_y * (3 - 2 * alp_y)
-
-	low_z = z - z % freq
-	hig_z = low_z + freq
-	alp_z = (z - low_z) / (hig_z - low_z)
-	alp_z = alp_z * alp_z * (3 - 2 * alp_z)
-
-	v000 = noise i, low_x, low_y, low_z
-	v001 = noise i, low_x, low_y, hig_z
-	v010 = noise i, low_x, hig_y, low_z
-	v011 = noise i, low_x, hig_y, hig_z
-	v100 = noise i, hig_x, low_y, low_z
-	v101 = noise i, hig_x, low_y, hig_z
-	v110 = noise i, hig_x, hig_y, low_z
-	v111 = noise i, hig_x, hig_y, hig_z
-
-	i1 = interpolate v000, v001, alp_z
-	i2 = interpolate v010, v011, alp_z
-	i3 = interpolate v100, v101, alp_z
-	i4 = interpolate v110, v111, alp_z
-
-	j1 = interpolate i1, i2, alp_y
-	j2 = interpolate i3, i4, alp_y
-
-	interpolate j1, j2, alp_x
-
 self.perlin = (pos, id, persistence, octaves, frequence) ->
-	pos = vec3.scale pos, 0.1 * frequence, vec3.create()
-	total = 0
+	pos = vec3.scale pos, frequence, vec3.create()
+	noise = 0
 	frequency = 1
 	amplitude = 1
 	for i in [0 ... octaves]
-		total += amplitude * interpolatedNoise i, pos[0], pos[1], pos[2], frequency
-		frequency /= 2
+		noise += amplitude * PerlinNoise.noise pos[0] * frequency, pos[1] * frequency, pos[2] * frequency
+		frequency *= 2
 		amplitude *= persistence
 
 	if id == 2
-		total *= 20
-		total = total - Math.floor total
-	else if id == 3
-		total = Math.cos pos[1] + total
+		noise *= 20
+		noise = noise - Math.floor noise
+	if id == 3
+		noise = Math.cos noise
 
-	total = clamp(total, -1, 1)
+	(clamp(noise, -1, 1) + 1) / 2

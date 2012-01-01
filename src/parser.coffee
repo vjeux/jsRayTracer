@@ -25,7 +25,8 @@ class self.Parser
 			func: (input) -> +input[0]
 			fields: ['radius', 'width', 'height', 'checkerboard', 'distscreen', 'brightness',
 			'group_id', 'id', 'max_reflect', 'tex_rep', 'tex_coef', 'size_mul', 'reflect',
-			'l_intensity', 'pnoise', 'pnoise_octave', 'pnoise_freq', 'pnoise_pers', 'bump', 'opacity']
+			'l_intensity', 'pnoise', 'pnoise_octave', 'pnoise_freq', 'pnoise_pers', 'bump',
+			'opacity', 'portal_id']
 		}, { # Array of Number
 			func: (input) -> input.map (x) -> +x
 			fields: ['highdef', 'coords', 'limits', 'rot']

@@ -88,6 +88,10 @@ objects.cylinder =
 		normal[2] = 0
 		normal
 
+objects.portal = copy objects.plane
+objects.portal.normal = (item, ray_, pos_) ->
+		[0, 0, 1]
+
 
 inLimits = (limits, pos_) ->
 	limits[0] <= pos_[0] <= limits[1] and
@@ -102,10 +106,11 @@ isValid = (ray, distances, item, min_distance) ->
 		pos = vec3.create()
 		pos = vec3.add ray.origin, (vec3.scale ray.dir, distance, pos), pos
 		pos_ = mat4.multiplyVec3 item.inverse, pos, vec3.create()
+
 		if inLimits item.limits, pos_
 			return [pos, pos_, distance]
 
-	[null, null, null]
+	[null, null, null, null]
 
 intersectItem = (item, ray, min_distance) ->
 	ray_ = # underscore means in the object's coordinates
@@ -119,15 +124,8 @@ intersectItem = (item, ray, min_distance) ->
 
 	color = item.color
 	opacity = item.opacity
-
-	if item.checkerboard?
-		pos2d = obj.pos2d item, pos_, 500, 500
-		if (mod(pos2d[0] / item.checkerboard, 1) > 0.5) == (mod(pos2d[1] / item.checkerboard, 1) > 0.5)
-			color = item.color2
-
-	if item.pnoise > 0
-		alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
-		color = vec3.mix item.color, item.color2, alpha
+	reflect = item.reflect
+	dir = ray.dir
 
 	if item.tex?
 		texture = textures[item.tex]
@@ -141,13 +139,31 @@ intersectItem = (item, ray, min_distance) ->
 		opacity *= texture.data[idx + 3] / 255
 		color = [texture.data[idx] / 255, texture.data[idx + 1] / 255, texture.data[idx + 2] / 255]
 
+	if item.checkerboard?
+		pos2d = obj.pos2d item, pos_, 500, 500
+		if (mod(pos2d[0] / item.checkerboard, 1) > 0.5) == (mod(pos2d[1] / item.checkerboard, 1) > 0.5)
+			color = item.color2
+
+	if item.pnoise > 0
+		alpha = perlin pos_, item.pnoise, item.pnoise_pers, item.pnoise_octave, item.pnoise_freq
+		color = vec3.mix color, item.color2, alpha
+
+	if item.type == 'portal'
+		dist = item.radius2 - (pos_[0] * pos_[0] + 2 * pos_[1] * pos_[1])
+		return if dist < 0
+
+		opacity *= 1 - Math.exp -dist / 2000
+		opacity = 1 - opacity
+		pos = mat4.multiplyVec3 item.other.transform, pos_, vec3.create()
+		dir = vec3.normalize mat4.multiplyDelta3 item.other.transform, vec3.create ray_.dir
+
 	normal = obj.normal item, ray_, pos_
 	normal = vec3.normalize mat4.multiplyDelta3 item.transform, vec3.create normal
 
 	if opacity == 0
 		return
 
-	{distance, pos, normal, color, item, opacity}
+	{distance, pos, normal, color, item, opacity, reflect, dir}
 
 intersect = (ray, min_distance=Infinity) ->
 	min_isect = null
@@ -199,17 +215,17 @@ launchRay = (ray, count) ->
 	if isect
 		color = lightning isect
 
-		if isect.opacity < 1
+		if count > 0 and isect.opacity < 1
 			ray2 =
-				origin: (vec3.add isect.pos, (vec3.scale ray.dir, epsilon, vec3.create()), vec3.create())
-				dir: (vec3.normalize vec3.create ray.dir)
-			color = vec3.mix color, (launchRay ray2, count), 1 - isect.opacity
+				origin: (vec3.add isect.pos, (vec3.scale isect.dir, epsilon, vec3.create()), vec3.create())
+				dir: (vec3.normalize vec3.create isect.dir)
+			color = vec3.mix color, (launchRay ray2, count - 1), 1 - isect.opacity
 
-		if count > 0 and isect.item.reflect > 0
+		if count > 0 and isect.reflect > 0
 			ray2 =
 				origin: (vec3.add isect.pos, (vec3.scale isect.normal, epsilon, vec3.create()), vec3.create())
 				dir: (vec3.normalize vec3.reflect ray.dir, (vec3.normalize isect.normal), vec3.create())
-			color = vec3.mix color, (launchRay ray2, count - 1), isect.item.reflect
+			color = vec3.mix color, (launchRay ray2, count - 1), isect.reflect
 
 	color
 

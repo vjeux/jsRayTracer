@@ -8,7 +8,6 @@ global
   height	768
   l_color	AAAAAA
   l_intensity	50
-  light_collision 1
 #  max_reflect	200
   highdef	1
 }

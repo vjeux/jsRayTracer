@@ -1,8 +1,4 @@
-
-importScripts('glmatrix.js', 'parser.js', 'ray.js', 'perlin.js');
-
-log = (x...) -> postMessage ['log', x...]
-copy = (obj) ->
+self.copy = (obj) ->
 	if Array.isArray obj
 		obj.slice()
 	else if obj instanceof Object and not (obj instanceof Function)
@@ -13,8 +9,12 @@ copy = (obj) ->
 	else
 		obj
 
+importScripts('glmatrix.js', 'parser.js', 'ray.js', 'perlin.js');
+
+self.log = (x...) -> postMessage ['log', x...]
+
 scene = null
-textures = {}
+self.textures = {}
 textures_remaining = 0
 
 @onmessage = (data: [type, value]) ->
@@ -42,6 +42,7 @@ textures_remaining = 0
 			realH: scene.global.height}]
 
 		groups = {}
+		portals = {}
 
 		for light in scene.light || []
 			light.coords ?= [0, 0, 0]
@@ -77,6 +78,15 @@ textures_remaining = 0
 			if item.group_id
 				groups[item.group_id] ?= []
 				groups[item.group_id].push item
+
+			if item.portal_id?
+				if item.portal_id not of portals
+					portals[item.portal_id] = []
+				portals[item.portal_id].push item
+
+		for id, two_portals of portals
+			two_portals[0].other = two_portals[1]
+			two_portals[1].other = two_portals[0]
 
 		for group in scene.group || []
 			group.size_mul ?= 1
