@@ -14,7 +14,7 @@ Features
 - Checkerboard, Perlin Noise
 - Colored Lights
 - Object cut via bounding box
-- Sub/Super-sampling and multiple random rays per pixel
+- Anti-aliasing: Sub/Super-sampling and multiple random rays per pixel
 
 Examples
 ========
