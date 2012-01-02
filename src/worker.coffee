@@ -137,12 +137,19 @@ textures_remaining = 0
 			textures[name] = content
 
 		if textures_remaining == 0
-			for y in [0 ... scene.global.H]
-				result = ['result']
-				result.push y
-				for x in [0 ... scene.global.W]
-					color = process x, y, scene.global.upscale, scene.global.randomRays
-					result.push ~~(color[0] * 255)
-					result.push ~~(color[1] * 255)
-					result.push ~~(color[2] * 255)
-				postMessage result
+			size = 32
+			while size >= 1
+				for y in [0 ... scene.global.H] by size
+					result = ['result']
+					result.push size
+					result.push y
+					for x in [0 ... scene.global.W] by size
+						if size == 32 or not (x % (size * 2) == 0 and y % (size * 2) == 0)
+							color = process x, y, scene.global.upscale, scene.global.randomRays
+							result.push ~~(color[0] * 255)
+							result.push ~~(color[1] * 255)
+							result.push ~~(color[2] * 255)
+
+					postMessage result
+
+				size /= 2

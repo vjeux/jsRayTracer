@@ -36,20 +36,29 @@ $ ->
 		count = 0
 		t = +new Date()
 
+		fillRect = (X, Y, size, r, g, b) ->
+			for y in [0 ... size]
+				idxData = ((Y + y) * W + X) * 4
+				for x in [0 ... size]
+					canvasData.data[idxData++] = r
+					canvasData.data[idxData++] = g
+					canvasData.data[idxData++] = b
+					canvasData.data[idxData++] = 255
+
 		worker.onmessage = (msg) ->
 			if msg.data[0] == 'result'
-				y = msg.data[1]
-				idxMsg = 2
+				size = msg.data[1]
+				y = msg.data[2]
+				idxMsg = 3
 				idxData = y * W * 4
-				for x in [0 ... W]
-					canvasData.data[idxData++] = msg.data[idxMsg++]
-					canvasData.data[idxData++] = msg.data[idxMsg++]
-					canvasData.data[idxData++] = msg.data[idxMsg++]
-					canvasData.data[idxData++] = 255
+				for x in [0 ... W] by size
+					if size == 32 or not (x % (size * 2) == 0 and y % (size * 2) == 0)
+						fillRect x, y, size, msg.data[idxMsg++], msg.data[idxMsg++], msg.data[idxMsg++]
+
 				context.putImageData canvasData, 0, 0
 
-				if ++count == H
-					$('#time').html(+new Date() - t + 'ms')
+#				if size == 1 and ++count == H
+				$('#time').html(Math.round((+new Date() - t) / 1000) + 's')
 
 			else if msg.data[0] == 'texture'
 				texture = msg.data[1]
