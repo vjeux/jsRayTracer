@@ -34,3 +34,9 @@ Examples
 <a href="http://fooo.fr/~vjeux/epita/raytracer/raytracer.html#perlin_sphere"><img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/perlin_sphere_thumb.png" title="perlin_sphere"/></a>
 <a href="http://fooo.fr/~vjeux/epita/raytracer/raytracer.html#example_5"><img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/example_5_thumb.png" title="example_5"/></a>
 <a href="http://fooo.fr/~vjeux/epita/raytracer/raytracer.html#example_7"><img src="http://fooo.fr/~vjeux/epita/raytracer/images/examples/example_7_thumb.png" title="example_7"/></a>
+
+
+Licence
+=======
+
+It's in MIT licence. Feel free to do whatever you want with it :)
